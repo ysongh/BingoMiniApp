@@ -11,12 +11,12 @@ const Lobby = () => {
     { id: 'DEF456', name: 'Casual Players', players: 5, maxPlayers: 15, status: 'Waiting' },
   ]);
 
-  const handleCreateRoom = (e) => {
+  const handleCreateRoom = (e: any) => {
     e.preventDefault();
     alert(`Room created with name: ${username}`);
   };
 
-  const handleJoinRoom = (e) => {
+  const handleJoinRoom = (e: any) => {
     e.preventDefault();
     alert(`Joining room: ${roomCode} as ${username}`);
   };
