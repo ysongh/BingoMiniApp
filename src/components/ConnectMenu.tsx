@@ -15,7 +15,7 @@ export function ConnectMenu() {
   }
 
   return (
-    <button className="bg-blue-400" type="button" onClick={() => connect({ connector: connectors[0] })}>
+    <button className="bg-blue-400 cursor-pointer" type="button" onClick={() => connect({ connector: connectors[0] })}>
       Connect
     </button>
   );

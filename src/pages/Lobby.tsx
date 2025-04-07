@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useAccount } from "wagmi";
+
+import { ConnectMenu } from '../components/ConnectMenu';
 
 const Lobby = () => {
-  const [username, setUsername] = useState('');
+  const { address } = useAccount();
+
   const [roomCode, setRoomCode] = useState('');
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
-  const [gameRooms, setGameRooms] = useState([
+  const [gameRooms] = useState([
     { id: 'ABC123', name: 'Friendly Bingo', players: 12, maxPlayers: 30, status: 'In Progress' },
     { id: 'XYZ789', name: 'Tournament Room', players: 8, maxPlayers: 20, status: 'Waiting' },
     { id: 'DEF456', name: 'Casual Players', players: 5, maxPlayers: 15, status: 'Waiting' },
@@ -13,20 +17,20 @@ const Lobby = () => {
 
   const handleCreateRoom = (e: any) => {
     e.preventDefault();
-    alert(`Room created with name: ${username}`);
+    alert(`Room created with name: ${address}`);
   };
 
   const handleJoinRoom = (e: any) => {
     e.preventDefault();
-    alert(`Joining room: ${roomCode} as ${username}`);
+    alert(`Joining room: ${roomCode} as ${address}`);
   };
 
   const handleQuickJoin = () => {
     const availableRoom = gameRooms.find(room => room.status === 'Waiting');
-    if (availableRoom && username) {
-      alert(`Quick joining room: ${availableRoom.id} as ${username}`);
-    } else if (!username) {
-      alert('Please enter a username first');
+    if (availableRoom && address) {
+      alert(`Quick joining room: ${availableRoom.id} as ${address}`);
+    } else if (!address) {
+      alert('Please enter a address first');
     } else {
       alert('No available rooms to join');
     }
@@ -64,14 +68,7 @@ const Lobby = () => {
           }`}
         >
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter your username"
-            />
+            <ConnectMenu />
           </div>
 
           <div className="flex border-b border-gray-200 mb-4">
@@ -112,7 +109,7 @@ const Lobby = () => {
               </div>
               <button
                 type="submit"
-                disabled={!username || !roomCode}
+                disabled={!address || !roomCode}
                 className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed"
               >
                 Join Room
@@ -120,7 +117,7 @@ const Lobby = () => {
               <button
                 type="button"
                 onClick={handleQuickJoin}
-                disabled={!username}
+                disabled={!address}
                 className="w-full mt-2 py-2 px-4 bg-green-600 text-white font-medium rounded hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed"
               >
                 Quick Join
@@ -146,7 +143,7 @@ const Lobby = () => {
               </div>
               <button
                 type="submit"
-                disabled={!username}
+                disabled={!address}
                 className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed"
               >
                 Create Room
@@ -190,7 +187,7 @@ const Lobby = () => {
                       setActiveSection('actions');
                       setActiveTab('join');
                     }}
-                    disabled={room.status !== 'Waiting' || !username}
+                    disabled={room.status !== 'Waiting' || !address}
                     className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                   >
                     Join
@@ -237,7 +234,7 @@ const Lobby = () => {
                           setRoomCode(room.id);
                           setActiveTab('join');
                         }}
-                        disabled={room.status !== 'Waiting' || !username}
+                        disabled={room.status !== 'Waiting' || !address}
                         className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                       >
                         Join
