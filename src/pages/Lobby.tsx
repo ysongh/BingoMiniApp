@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAccount } from "wagmi";
 
 import { ConnectMenu } from '../components/ConnectMenu';
 
 const Lobby = () => {
   const { address } = useAccount();
+  const navigate = useNavigate();
 
   const [roomCode, setRoomCode] = useState('');
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
@@ -26,14 +28,7 @@ const Lobby = () => {
   };
 
   const handleQuickJoin = () => {
-    const availableRoom = gameRooms.find(room => room.status === 'Waiting');
-    if (availableRoom && address) {
-      alert(`Quick joining room: ${availableRoom.id} as ${address}`);
-    } else if (!address) {
-      alert('Please enter a address first');
-    } else {
-      alert('No available rooms to join');
-    }
+    navigate('/game');
   };
 
   return (
@@ -186,6 +181,7 @@ const Lobby = () => {
                       setRoomCode(room.id);
                       setActiveSection('actions');
                       setActiveTab('join');
+
                     }}
                     disabled={room.status !== 'Waiting' || !address}
                     className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"

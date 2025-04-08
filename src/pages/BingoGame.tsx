@@ -42,7 +42,7 @@ const BingoGame: React.FC = () => {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [bingoCard, setBingoCard] = useState<BingoCardType>(null);
   const [selectedCells, setSelectedCells] = useState<SelectedCellsType>({});
-  const [players, setPlayers] = useState<PlayerType[]>([
+  const [players] = useState<PlayerType[]>([
     { id: 1, name: "JohnDoe", score: 0, bingos: 0 },
     { id: 2, name: "BingoQueen", score: 120, bingos: 1 },
     { id: 3, name: "LuckyPlayer", score: 80, bingos: 0 },
