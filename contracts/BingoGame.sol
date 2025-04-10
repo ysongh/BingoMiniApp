@@ -8,13 +8,6 @@ pragma solidity ^0.8.19;
 contract BingoGame {
     // ======== STRUCTS ========
     
-    struct Player {
-        string username;
-        uint256 score;
-        uint256 bingos;
-        bool exists;
-    }
-    
     struct Room {
         string name;
         address owner;
@@ -47,7 +40,6 @@ contract BingoGame {
     string[] public roomIds;
     
     // Player management
-    mapping(address => Player) public players;
     address[] public playerAddresses;
     
     // Player cards - maps player address to room ID to bingo card
@@ -63,7 +55,6 @@ contract BingoGame {
     
     // ======== EVENTS ========
     
-    event PlayerRegistered(address indexed player, string username);
     event RoomCreated(string roomId, string name, address indexed owner, uint256 maxPlayers, uint256 entryFee);
     event PlayerJoinedRoom(string roomId, address indexed player);
     event GameStarted(string roomId);
@@ -78,11 +69,6 @@ contract BingoGame {
     }
     
     // ======== MODIFIERS ========
-    
-    modifier onlyExistingPlayer() {
-        require(players[msg.sender].exists, "Player does not exist");
-        _;
-    }
     
     modifier onlyRoomOwner(string memory roomId) {
         require(rooms[roomId].owner == msg.sender, "Only room owner can perform this action");
@@ -117,35 +103,16 @@ contract BingoGame {
     // ======== FUNCTIONS ========
     
     /**
-     * @dev Register a new player
-     * @param username The player's username
-     */
-    function registerPlayer(string memory username) public {
-        require(!players[msg.sender].exists, "Player already registered");
-        require(bytes(username).length > 0, "Username cannot be empty");
-        
-        players[msg.sender] = Player({
-            username: username,
-            score: 0,
-            bingos: 0,
-            exists: true
-        });
-        
-        playerAddresses.push(msg.sender);
-        emit PlayerRegistered(msg.sender, username);
-    }
-    
-    /**
      * @dev Create a new bingo room
      * @param roomId Unique identifier for the room
      * @param name Room name
      * @param maxPlayers Maximum players allowed
      * @param entryFee Fee to join (in wei)
      */
-    function createRoom(string memory roomId, string memory name, uint256 maxPlayers, uint256 entryFee) public onlyExistingPlayer {
+    function createRoom(string memory roomId, string memory name, uint256 maxPlayers, uint256 entryFee) public {
         require(!rooms[roomId].exists, "Room ID already exists");
         require(bytes(name).length > 0, "Room name cannot be empty");
-        require(maxPlayers > 1, "Room must allow at least 2 players");
+        // require(maxPlayers > 1, "Room must allow at least 2 players");
         
         Room storage newRoom = rooms[roomId];
         newRoom.name = name;
@@ -165,7 +132,7 @@ contract BingoGame {
      * @dev Join a bingo room
      * @param roomId Room identifier
      */
-    function joinRoom(string memory roomId) public payable onlyExistingPlayer roomExists(roomId) roomNotInProgress(roomId) {
+    function joinRoom(string memory roomId) public payable roomExists(roomId) roomNotInProgress(roomId) {
         Room storage room = rooms[roomId];
         
         require(!room.players[msg.sender], "Player already in room");
@@ -195,7 +162,7 @@ contract BingoGame {
      */
     function startGame(string memory roomId) public onlyRoomOwner(roomId) roomNotInProgress(roomId) {
         Room storage room = rooms[roomId];
-        require(room.playerCount >= 2, "Need at least 2 players to start");
+        // require(room.playerCount >= 2, "Need at least 2 players to start");
         
         room.gameInProgress = true;
         room.calledNumbers = new uint256[](0);
@@ -237,8 +204,7 @@ contract BingoGame {
      * @dev Claim a bingo win
      * @param roomId Room identifier
      */
-    function claimBingo(string memory roomId) public 
-        onlyExistingPlayer 
+    function claimBingo(string memory roomId) public  
         roomExists(roomId) 
         roomInProgress(roomId)
         playerInRoom(roomId)
@@ -248,7 +214,6 @@ contract BingoGame {
         require(_verifyBingo(roomId, msg.sender), "No valid bingo found");
         
         Room storage room = rooms[roomId];
-        Player storage player = players[msg.sender];
         
         // Mark player as having claimed bingo in this game
         room.claimedBingo[msg.sender] = true;
@@ -257,10 +222,6 @@ contract BingoGame {
         uint256 totalWinners = _countBingoWinners(roomId);
         uint256 platformFee = (room.prize * platformFeePercent) / 100;
         uint256 winnerPrize = (room.prize - platformFee) / totalWinners;
-        
-        // Update player stats
-        player.score += winnerPrize;
-        player.bingos++;
         
         // Transfer the winnings
         payable(msg.sender).transfer(winnerPrize);
@@ -334,8 +295,7 @@ contract BingoGame {
         uint8[5] memory iColumn, uint8[5] memory nColumn,
         uint8[5] memory gColumn, and bool[25] memory marked)
      */
-    function getPlayerCard(string memory roomId) public view 
-        onlyExistingPlayer 
+    function getPlayerCard(string memory roomId) public view  
         roomExists(roomId) 
         playerInRoom(roomId) 
         returns (
@@ -366,8 +326,7 @@ contract BingoGame {
      * @param row Row index (0-4)
      * @param col Column index (0-4)
      */
-    function markNumber(string memory roomId, uint8 row, uint8 col) public 
-        onlyExistingPlayer 
+    function markNumber(string memory roomId, uint8 row, uint8 col) public  
         roomExists(roomId) 
         roomInProgress(roomId)
         playerInRoom(roomId)
