@@ -1,26 +1,55 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount } from "wagmi";
+import {
+  type BaseError,
+  useAccount,
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt
+} from 'wagmi';
 
 import { ConnectMenu } from '../components/ConnectMenu';
+// @ts-ignore
+import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
 
 const Lobby = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
 
+  const { data: hash, error, writeContract } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = 
+  useWaitForTransactionReceipt({
+    hash,
+  });
+
+  const { data: rooms = [] } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: BingoABI,
+    functionName: 'getAllRooms',
+  });
+
   const [roomCode, setRoomCode] = useState('');
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
-  const [gameRooms] = useState([
-    { id: 'ABC123', name: 'Friendly Bingo', players: 12, maxPlayers: 30, status: 'In Progress' },
-    { id: 'XYZ789', name: 'Tournament Room', players: 8, maxPlayers: 20, status: 'Waiting' },
-    { id: 'DEF456', name: 'Casual Players', players: 5, maxPlayers: 15, status: 'Waiting' },
-  ]);
 
-  const handleCreateRoom = (e: any) => {
+  const handleCreateRoom = async (e: any) => {
     e.preventDefault();
-    alert(`Room created with name: ${address}`);
+    try {
+      const roomName = e.target.roomName.value;
+      const roomSize = e.target.roomSize.value;
+      console.log(roomName, roomSize);
+     
+      writeContract({
+        address: CONTRACT_ADDRESS,
+        abi: BingoABI,
+        functionName: 'createRoom',
+        args: [roomName, roomName, roomSize, 0],
+      });
+    } catch (error) {
+      console.error('Failed to create game:', error);
+    }
   };
+
 
   const handleJoinRoom = (e: any) => {
     e.preventDefault();
@@ -123,6 +152,7 @@ const Lobby = () => {
               <div className="mb-3">
                 <label className="block text-sm font-medium mb-1">Room Name</label>
                 <input
+                  id="roomName"
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Enter room name"
@@ -130,7 +160,8 @@ const Lobby = () => {
               </div>
               <div className="mb-3">
                 <label className="block text-sm font-medium mb-1">Room Size</label>
-                <select className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select id="roomSize" className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="1">1 Players</option>
                   <option value="10">10 Players</option>
                   <option value="20">20 Players</option>
                   <option value="30">30 Players</option>
@@ -143,6 +174,11 @@ const Lobby = () => {
               >
                 Create Room
               </button>
+              {isConfirming && <div>Waiting for confirmation...</div>}
+              {isConfirmed && <div>Transaction confirmed.</div>}
+              {error && (
+                <div>Error: {(error as BaseError).shortMessage || error.message}</div>
+              )}
             </form>
           )}
         </div>
@@ -155,35 +191,34 @@ const Lobby = () => {
           <h2 className="text-lg font-medium mb-3">Available Rooms</h2>
           
           <div className="md:hidden space-y-3">
-            {gameRooms.map((room) => (
-              <div key={room.id} className="border rounded-lg p-3">
+            {rooms.map((room: string, index: number) => (
+              <div key={index} className="border rounded-lg p-3">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h3 className="font-medium">{room.name}</h3>
-                    <p className="text-xs text-gray-500">ID: {room.id}</p>
+                    <h3 className="font-medium">{room}</h3>
                   </div>
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
-                      room.status === 'Waiting'
+                      room === 'Waiting'
                         ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
                     }`}
                   >
-                    {room.status}
+                    Waiting
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="text-sm">
-                    {room.players}/{room.maxPlayers} players
+                    0/2 players
                   </div>
                   <button
                     onClick={() => {
-                      setRoomCode(room.id);
+                      setRoomCode(room);
                       setActiveSection('actions');
                       setActiveTab('join');
 
                     }}
-                    disabled={room.status !== 'Waiting' || !address}
+                    disabled={!address}
                     className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                   >
                     Join
@@ -204,33 +239,32 @@ const Lobby = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {gameRooms.map((room) => (
-                  <tr key={room.id}>
+                {rooms.map((room: string, index: number) => (
+                  <tr key={index}>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="font-medium">{room.name}</div>
-                      <div className="text-xs text-gray-500">ID: {room.id}</div>
+                      <div className="font-medium">{room}</div>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      {room.players}/{room.maxPlayers}
+                      0/2
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span
                         className={`px-2 py-1 text-xs rounded-full ${
-                          room.status === 'Waiting'
+                          room === 'Waiting'
                             ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
-                        {room.status}
+                        Waiting
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <button
                         onClick={() => {
-                          setRoomCode(room.id);
+                          setRoomCode(room);
                           setActiveTab('join');
                         }}
-                        disabled={room.status !== 'Waiting' || !address}
+                        disabled={!address}
                         className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                       >
                         Join
