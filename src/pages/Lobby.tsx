@@ -57,7 +57,7 @@ const Lobby = () => {
   };
 
   const handleQuickJoin = () => {
-    navigate('/game');
+    navigate('/game/test');
   };
 
   return (
@@ -212,12 +212,7 @@ const Lobby = () => {
                     0/2 players
                   </div>
                   <button
-                    onClick={() => {
-                      setRoomCode(room);
-                      setActiveSection('actions');
-                      setActiveTab('join');
-
-                    }}
+                    onClick={() => navigate('/game/' + room)}
                     disabled={!address}
                     className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                   >

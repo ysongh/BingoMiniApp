@@ -4,6 +4,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import Lobby from "./pages/Lobby";
 import BingoGame from "./pages/BingoGame";
+import TestBingoGame from "./pages/TestBingoGame";
 
 function App() {
   useEffect(() => {
@@ -14,7 +15,10 @@ function App() {
     <HashRouter>
       <Routes>
         <Route
-          path="/game"
+          path="/game/test"
+          element={<TestBingoGame />} />
+        <Route
+          path="/game/:gameid"
           element={<BingoGame />} />
         <Route
           path="/"
