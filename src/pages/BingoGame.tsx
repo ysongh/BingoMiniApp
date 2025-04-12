@@ -1,4 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  type BaseError,
+  useAccount,
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt
+} from 'wagmi';
+
+// @ts-ignore
+import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
 
 // Define types
 type GameStateType = 'waiting' | 'playing' | 'finished';
@@ -35,6 +46,9 @@ interface ChatMessageType {
 }
 
 const BingoGame: React.FC = () => {
+  const { gameid } = useParams();
+  const { address } = useAccount();
+
   // Game state
   const [gameState, setGameState] = useState<GameStateType>('waiting');
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
@@ -55,20 +69,62 @@ const BingoGame: React.FC = () => {
   ]);
   const [chatInput, setChatInput] = useState<string>('');
 
+  const { data: roomdata } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: BingoABI,
+    functionName: 'rooms',
+    args: [gameid]
+  });
+
+  const { data: isJoined } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: BingoABI,
+    functionName: 'playerCards',
+    args: [address, gameid]
+  });
+
+  const { data: playerCard } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: BingoABI,
+    functionName: 'playerCard',
+    args: [gameid]
+  });
+
+  const { data: joinHash, error: joinError, writeContract: joinRoomContract } = useWriteContract();
+  const { isLoading: joinLoading, isSuccess: joinSuccess } = 
+    useWaitForTransactionReceipt({
+      hash: joinHash,
+    });
+
   // Generate a random bingo card when component loads
-  useEffect(() => {
-    generateBingoCard();
-    // Start a timer to simulate game starting
-    setTimeout(() => setGameState('playing'), 3000);
+  // useEffect(() => {
+  //   generateBingoCard();
+  //   // Start a timer to simulate game starting
+  //   setTimeout(() => setGameState('playing'), 3000);
     
-    // For demonstration, call a new number every few seconds
-    if (gameState === 'playing') {
-      const interval = setInterval(() => {
-        callNewNumber();
-      }, 5000);
-      return () => clearInterval(interval);
+  //   // For demonstration, call a new number every few seconds
+  //   if (gameState === 'playing') {
+  //     const interval = setInterval(() => {
+  //       callNewNumber();
+  //     }, 5000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [gameState]);
+
+  console.log(roomdata, isJoined, playerCard);
+
+  const handleJoinGame = (): void => {
+    try {
+      joinRoomContract({
+        address: CONTRACT_ADDRESS,
+        abi: BingoABI,
+        functionName: 'joinRoom',
+        args: [gameid],
+      });
+    } catch (error) {
+      console.error('Failed to join the game:', error);
     }
-  }, [gameState]);
+  };
 
   // Generate a random 5x5 bingo card with free space in center
   const generateBingoCard = (): void => {
@@ -218,6 +274,26 @@ const BingoGame: React.FC = () => {
       </div>
     );
   };
+
+  if (!isJoined) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-indigo-50">
+        <div>
+          <button 
+            onClick={handleJoinGame}
+            className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+          >
+            Join Game
+          </button>
+          {joinLoading && <div>Waiting for confirmation...</div>}
+          {joinSuccess && <div>Transaction confirmed.</div>}
+          {joinError && (
+            <div>Error: {(joinError as BaseError).shortMessage || joinError.message}</div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (!bingoCard) {
     return (
