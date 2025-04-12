@@ -9,7 +9,7 @@ export function ConnectMenu() {
       <>
         <div>Connected account:</div>
         <div>{address}</div>
-        <SignButton />
+        {/* <SignButton /> */}
       </>
     );
   }
