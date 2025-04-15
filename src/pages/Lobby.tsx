@@ -53,7 +53,7 @@ const Lobby = () => {
 
   const handleJoinRoom = (e: any) => {
     e.preventDefault();
-    alert(`Joining room: ${roomCode} as ${address}`);
+    navigate('/game/' + roomCode);
   };
 
   const handleQuickJoin = () => {
