@@ -83,11 +83,13 @@ const BingoGame: React.FC = () => {
     args: [address, gameid]
   });
 
+
   const { data: playerCard } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: BingoABI,
-    functionName: 'playerCard',
-    args: [gameid]
+    functionName: 'getPlayerCard',
+    args: [gameid],
+    account: address
   });
 
   const { data: joinHash, error: joinError, writeContract: joinRoomContract } = useWriteContract();
@@ -249,9 +251,17 @@ const BingoGame: React.FC = () => {
 
   // Render bingo card cell
   const renderCell = (letter: string, index: number): JSX.Element => {
-    if (!bingoCard) return <div>Loading...</div>;
+    if (!playerCard) return <div>Loading...</div>;
+
+    const letterToNumber = {
+      "B": 0,
+      "I": 1,
+      "N": 2,
+      "G": 3,
+      "O": 4,
+    };
     
-    const value = bingoCard[letter as keyof BingoCardType][index];
+    const value = playerCard[letterToNumber[letter as keyof BingoCardType]][index];
     const isFree = value === "FREE";
     const isSelected = selectedCells[`${letter}${index}`];
     const isCalled = isFree || (typeof value === 'number' && calledNumbers.includes(value));
@@ -295,7 +305,7 @@ const BingoGame: React.FC = () => {
     );
   }
 
-  if (!bingoCard) {
+  if (!playerCard) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-indigo-50">
         <div className="text-xl">Loading bingo card...</div>
