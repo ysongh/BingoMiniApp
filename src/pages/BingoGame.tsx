@@ -97,6 +97,11 @@ const BingoGame: React.FC = () => {
     useWaitForTransactionReceipt({
       hash: joinHash,
     });
+    const { data: startGameHash, error: startGameError, writeContract: startGameContract } = useWriteContract();
+    const { isLoading: startGameLoading, isSuccess: startGameSuccess } = 
+      useWaitForTransactionReceipt({
+        hash: startGameHash,
+      });
 
   // Generate a random bingo card when component loads
   // useEffect(() => {
@@ -125,6 +130,19 @@ const BingoGame: React.FC = () => {
       });
     } catch (error) {
       console.error('Failed to join the game:', error);
+    }
+  };
+
+  const handleStartGame = (): void => {
+    try {
+      startGameContract({
+        address: CONTRACT_ADDRESS,
+        abi: BingoABI,
+        functionName: 'startGame',
+        args: [gameid],
+      });
+    } catch (error) {
+      console.error('Failed to start the game:', error);
     }
   };
 
@@ -335,8 +353,23 @@ const BingoGame: React.FC = () => {
                 )}
               </>
             ) : (
-              gameState === 'waiting' ? (
-                <div className="py-2 text-gray-500">Waiting for game to start...</div>
+              roomdata[4] === false ? (
+                <div className="py-2">
+                  <p className="text-gray-500">
+                    Waiting for game to start...
+                  </p>
+                  <button 
+                    onClick={handleStartGame}
+                    className="mt-2 px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  >
+                    Start Game
+                  </button>
+                  {startGameLoading && <div>Waiting for confirmation...</div>}
+                  {startGameSuccess && <div>Transaction confirmed.</div>}
+                  {startGameError && (
+                    <div>Error: {(startGameError as BaseError).shortMessage || startGameError.message}</div>
+                  )}
+                </div>
               ) : (
                 <div className="py-2 text-gray-500">First number coming up...</div>
               )
