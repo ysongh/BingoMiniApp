@@ -97,11 +97,18 @@ const BingoGame: React.FC = () => {
     useWaitForTransactionReceipt({
       hash: joinHash,
     });
-    const { data: startGameHash, error: startGameError, writeContract: startGameContract } = useWriteContract();
-    const { isLoading: startGameLoading, isSuccess: startGameSuccess } = 
-      useWaitForTransactionReceipt({
-        hash: startGameHash,
-      });
+
+  const { data: startGameHash, error: startGameError, writeContract: startGameContract } = useWriteContract();
+  const { isLoading: startGameLoading, isSuccess: startGameSuccess } = 
+    useWaitForTransactionReceipt({
+      hash: startGameHash,
+    });
+
+  const { data: callNumberHash, error: callNumberError, writeContract: callNumberContract } = useWriteContract();
+  const { isLoading: callNumberLoading, isSuccess: callNumberSuccess } = 
+    useWaitForTransactionReceipt({
+      hash: callNumberHash,
+    });
 
   // Generate a random bingo card when component loads
   // useEffect(() => {
@@ -143,6 +150,19 @@ const BingoGame: React.FC = () => {
       });
     } catch (error) {
       console.error('Failed to start the game:', error);
+    }
+  };
+
+  const handlecallNumber = (): void => {
+    try {
+      callNumberContract({
+        address: CONTRACT_ADDRESS,
+        abi: BingoABI,
+        functionName: 'callNumber',
+        args: [gameid],
+      });
+    } catch (error) {
+      console.error('Failed to call the number:', error);
     }
   };
 
@@ -371,7 +391,22 @@ const BingoGame: React.FC = () => {
                   )}
                 </div>
               ) : (
-                <div className="py-2 text-gray-500">First number coming up...</div>
+                <div className="py-2 text-gray-500">
+                  <p className="text-gray-500">
+                    First number coming up...
+                  </p>
+                  <button 
+                    onClick={handlecallNumber}
+                    className="mt-2 px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  >
+                    Call Number
+                  </button>
+                  {callNumberLoading && <div>Waiting for confirmation...</div>}
+                  {callNumberSuccess && <div>Transaction confirmed.</div>}
+                  {callNumberError && (
+                    <div>Error: {(callNumberError as BaseError).shortMessage || callNumberError.message}</div>
+                  )}
+                </div>
               )
             )}
           </div>
