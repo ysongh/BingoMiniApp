@@ -42,6 +42,14 @@ interface ChatMessageType {
   timestamp: string;
 }
 
+const letterToNumber = {
+  "B": 0,
+  "I": 1,
+  "N": 2,
+  "G": 3,
+  "O": 4,
+};
+
 const BingoGame: React.FC = () => {
   const { gameid } = useParams();
   const { address } = useAccount();
@@ -79,7 +87,6 @@ const BingoGame: React.FC = () => {
     args: [address, gameid]
   });
 
-
   const { data: playerCard } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: BingoABI,
@@ -104,6 +111,12 @@ const BingoGame: React.FC = () => {
   const { isLoading: callNumberLoading, isSuccess: callNumberSuccess } = 
     useWaitForTransactionReceipt({
       hash: callNumberHash,
+    });
+  
+  const { data: markNumberHash, error: markNumberError, writeContract: markNumberContract } = useWriteContract();
+  const { isLoading: markNumberLoading, isSuccess: markNumberSuccess } = 
+    useWaitForTransactionReceipt({
+      hash: markNumberHash,
     });
 
   console.log(roomdata, isJoined, playerCard);
@@ -171,6 +184,17 @@ const BingoGame: React.FC = () => {
 
   // Handle clicking on a bingo card cell
   const handleCellClick = (letter: string, index: number): void => {
+    try {
+      markNumberContract({
+        address: CONTRACT_ADDRESS,
+        abi: BingoABI,
+        functionName: 'markNumber',
+        args: [gameid, letterToNumber[letter as keyof BingoCardType], index],
+      });
+    } catch (error) {
+      console.error('Failed to mark the number:', error);
+    }
+
     if (!bingoCard) return;
     
     const cellKey = `${letter}${index}`;
@@ -224,14 +248,6 @@ const BingoGame: React.FC = () => {
   // Render bingo card cell
   const renderCell = (letter: string, index: number): JSX.Element => {
     if (!playerCard) return <div>Loading...</div>;
-
-    const letterToNumber = {
-      "B": 0,
-      "I": 1,
-      "N": 2,
-      "G": 3,
-      "O": 4,
-    };
     
     const value = playerCard[letterToNumber[letter as keyof BingoCardType]][index];
     const isFree = value === "FREE";
@@ -339,6 +355,11 @@ const BingoGame: React.FC = () => {
                   {callNumberSuccess && <div>Transaction confirmed.</div>}
                   {callNumberError && (
                     <div>Error: {(callNumberError as BaseError).shortMessage || callNumberError.message}</div>
+                  )}
+                  {markNumberLoading && <div>Waiting for confirmation...</div>}
+                  {markNumberSuccess && <div>Transaction confirmed.</div>}
+                  {markNumberError && (
+                    <div>Error: {(markNumberError as BaseError).shortMessage || markNumberError.message}</div>
                   )}
                 </div>
               )
