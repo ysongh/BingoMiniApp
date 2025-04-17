@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   type BaseError,
@@ -10,9 +10,6 @@ import {
 
 // @ts-ignore
 import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
-
-// Define types
-type GameStateType = 'waiting' | 'playing' | 'finished';
 
 type LatestNumberType = {
   letter: string;
@@ -50,7 +47,6 @@ const BingoGame: React.FC = () => {
   const { address } = useAccount();
 
   // Game state
-  const [gameState, setGameState] = useState<GameStateType>('waiting');
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [latestNumber, setLatestNumber] = useState<LatestNumberType>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -110,21 +106,6 @@ const BingoGame: React.FC = () => {
       hash: callNumberHash,
     });
 
-  // Generate a random bingo card when component loads
-  // useEffect(() => {
-  //   generateBingoCard();
-  //   // Start a timer to simulate game starting
-  //   setTimeout(() => setGameState('playing'), 3000);
-    
-  //   // For demonstration, call a new number every few seconds
-  //   if (gameState === 'playing') {
-  //     const interval = setInterval(() => {
-  //       callNewNumber();
-  //     }, 5000);
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [gameState]);
-
   console.log(roomdata, isJoined, playerCard);
 
   const handleJoinGame = (): void => {
@@ -166,27 +147,6 @@ const BingoGame: React.FC = () => {
     }
   };
 
-  // Generate a random 5x5 bingo card with free space in center
-  const generateBingoCard = (): void => {
-    const columns = {
-      B: getRandomNumbers(1, 15, 5),
-      I: getRandomNumbers(16, 30, 5),
-      N: getRandomNumbers(31, 45, 5),
-      G: getRandomNumbers(46, 60, 5),
-      O: getRandomNumbers(61, 75, 5)
-    };
-    
-    // Set middle spot (N3) as free space
-    // @ts-ignore
-    columns.N[2] = "FREE";
-    
-    setBingoCard(columns);
-    
-    // Initialize the center cell as already selected
-    setSelectedCells({
-      'N2': true
-    });
-  };
 
   // Get array of unique random numbers within a range
   const getRandomNumbers = (min: number, max: number, count: number): number[] => {
@@ -198,32 +158,6 @@ const BingoGame: React.FC = () => {
       }
     }
     return numbers;
-  };
-
-  // Simulate calling a new bingo number
-  const callNewNumber = (): void => {
-    if (calledNumbers.length >= 75) return;
-    
-    let newNumber: number;
-    do {
-      newNumber = Math.floor(Math.random() * 75) + 1;
-    } while (calledNumbers.includes(newNumber));
-    
-    const letter = getLetterForNumber(newNumber);
-    setLatestNumber({ letter, number: newNumber });
-    setCalledNumbers(prev => [...prev, newNumber]);
-    setCountdown(15);
-    
-    // Start countdown timer
-    let timeLeft = 14;
-    const timer = setInterval(() => {
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-      } else {
-        setCountdown(timeLeft);
-        timeLeft -= 1;
-      }
-    }, 1000);
   };
 
   // Get the corresponding BINGO letter for a number
