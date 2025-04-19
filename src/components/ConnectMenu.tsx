@@ -1,12 +1,23 @@
-import { useAccount, useConnect, useSignMessage } from "wagmi";
+import {
+  useAccount,
+  useConnect,
+  useChains,
+  useChainId,
+  useSignMessage
+} from "wagmi";
 
 export function ConnectMenu() {
   const { isConnected, address } = useAccount();
   const { connect, connectors } = useConnect();
+  const chains = useChains();
+  const chainId = useChainId();
+
+  const currentChain = chains.find(chain => chain.id === chainId);
 
   if (isConnected) {
     return (
       <>
+        <p>Connected to: {currentChain ? currentChain.name : 'Not connected'}</p>
         <div>Connected account:</div>
         <div>{address}</div>
         {/* <SignButton /> */}
