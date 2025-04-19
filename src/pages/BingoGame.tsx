@@ -76,7 +76,7 @@ const BingoGame: React.FC = () => {
   const { data: roomdata } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: BingoABI,
-    functionName: 'rooms',
+    functionName: 'getRoomDetails',
     args: [gameid]
   });
 
