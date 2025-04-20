@@ -189,7 +189,7 @@ const BingoGame: React.FC = () => {
         address: CONTRACT_ADDRESS,
         abi: BingoABI,
         functionName: 'markNumber',
-        args: [gameid, letterToNumber[letter as keyof BingoCardType], index],
+        args: [gameid, index, letterToNumber[letter as keyof BingoCardType]],
       });
     } catch (error) {
       console.error('Failed to mark the number:', error);
