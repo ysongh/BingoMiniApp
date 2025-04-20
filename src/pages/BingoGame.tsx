@@ -396,16 +396,16 @@ const BingoGame: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-3">
             <h2 className="text-sm font-medium text-gray-500 mb-2">Called Numbers</h2>
             <div className="grid grid-cols-5 sm:grid-cols-10 gap-1">
-              {calledNumbers.map(num => {
+              {roomdata[7].map(num => {
                 const letter = getLetterForNumber(num);
                 return (
                   <div key={num} className="bg-gray-100 rounded p-1 text-center text-sm flex items-center justify-center">
                     <span className="font-bold text-xs text-indigo-600 mr-1">{letter}</span>
-                    {num}
+                    {num.toString()}
                   </div>
                 );
               })}
-              {calledNumbers.length === 0 && (
+              {roomdata[7].length === 0 && (
                 <div className="col-span-5 sm:col-span-10 text-gray-400 text-sm py-1">No numbers called yet</div>
               )}
             </div>
