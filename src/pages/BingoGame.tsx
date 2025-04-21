@@ -249,7 +249,7 @@ const BingoGame: React.FC = () => {
   const renderCell = (letter: string, index: number): JSX.Element => {
     if (!playerCard) return <div>Loading...</div>;
     
-    const value = letter === "N" && index === 2 ? "Free" : playerCard[letterToNumber[letter as keyof BingoCardType]][index];
+    const value = letter === "N" && index === 2 ? "Free" : playerCard[index][letterToNumber[letter as keyof BingoCardType]];
     const isFree = letter === "N" && index === 2;
     const isSelected = playerCard[5][letterToNumber[letter as keyof BingoCardType] * 5 + index];
     const isCalled = isFree || (typeof value === 'number' && calledNumbers.includes(value));
