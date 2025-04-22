@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   type BaseError,
@@ -14,9 +14,40 @@ import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
 
+export interface GameRoom {
+  _id?: string;
+  roomId: string;
+  name: string;
+  maxPlayers: number;
+  players: Player[];
+  status: 'Waiting' | 'In Progress' | 'Finished';
+  calledNumbers: number[];
+  latestNumber?: { letter: string; number: number };
+  createdAt?: string;
+}
+
 const Lobby = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
+
+  // Fetch available rooms on mount
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetch(SERVER_URL + 'api/game/rooms');
+        if (!response.ok) {
+          throw new Error('Failed to fetch rooms');
+        }
+        const data = await response.json();
+        console.log(data);
+        setGameRooms(data);
+      } catch (err) {
+        console.error('Failed to fetch rooms:', err);
+        alert('Error fetching rooms');
+      }
+    };
+    fetchRooms();
+  }, []);
 
   const { data: hash, error, writeContract } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = 
@@ -30,6 +61,7 @@ const Lobby = () => {
     functionName: 'getAllRooms',
   });
 
+  const [gameRooms, setGameRooms] =useState<GameRoom[]>([]);
   const [roomCode, setRoomCode] = useState('');
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
@@ -245,6 +277,36 @@ const Lobby = () => {
                 </div>
               </div>
             ))}
+            {gameRooms.map((room) => (
+              <div key={room.roomId} className="border rounded-lg p-3">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-medium">{room.name}</h3>
+                  </div>
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${
+                      room.status === 'Waiting'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
+                    {room.status}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="text-sm">
+                    {room.players.length}/{room.maxPlayers}
+                  </div>
+                  <button
+                    onClick={() => navigate('/game/' + room.roomId)}
+                    disabled={!address}
+                    className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
+                  >
+                    Join
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="hidden md:block overflow-x-auto">
@@ -284,6 +346,37 @@ const Lobby = () => {
                           setActiveTab('join');
                         }}
                         disabled={!address}
+                        className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
+                      >
+                        Join
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {gameRooms.map((room) => (
+                  <tr key={room.roomId}>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="font-medium">{room.name}</div>
+                      <div className="text-xs text-gray-500">ID: {room.roomId}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {room.players.length}/{room.maxPlayers}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          room.status === 'Waiting'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
+                        {room.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => setRoomCode(room.roomId)}
+                        disabled={room.status !== 'Waiting' || !address}
                         className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                       >
                         Join

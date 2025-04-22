@@ -33,6 +33,16 @@ router.post('/create', async (req, res) => {
   }
 });
 
+// Get all available rooms
+router.get('/rooms', async (req, res) => {
+  try {
+    const rooms = await GameRoom.find({ status: 'Waiting' }).select('roomId name players maxPlayers status');
+    res.json(rooms);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch rooms' });
+  }
+});
+
 // Helper function to generate a bingo card
 const generateBingoCard = () => {
   const getRandomNumbers = (min, max, count) => {
