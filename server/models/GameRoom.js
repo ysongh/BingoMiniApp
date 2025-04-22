@@ -17,4 +17,4 @@ const gameRoomSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('GameRoom', gameRoomSchema);
+export default mongoose.model('GameRoom', gameRoomSchema);

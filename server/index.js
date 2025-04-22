@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import pkg from 'body-parser';
 import mongoose from 'mongoose';
+import gameRoutes from './routes/game.js';
  
 dotenv.config();
 
@@ -19,6 +20,8 @@ mongoose.connect(process.env.MONGO_URI, {
   })
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('MongoDB connection error:', err));
+
+app.use('/api/game', gameRoutes);
 
 app.get('/', (req, res) => res.send('It Work'));
 

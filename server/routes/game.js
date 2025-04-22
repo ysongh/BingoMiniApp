@@ -1,0 +1,53 @@
+import express from 'express';
+import GameRoom from '../models/GameRoom.js';
+
+const router = express.Router();
+
+// Create a new game room
+router.post('/create', async (req, res) => {
+  const { username, roomName, maxPlayers } = req.body;
+  if (!username || !roomName || !maxPlayers) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const roomId = generateRoomId();
+  const bingoCard = generateBingoCard(); // Implement this function (see below)
+
+  const gameRoom = new GameRoom({
+    roomId,
+    name: roomName,
+    maxPlayers,
+    players: [{ userId: username, username, bingoCard }],
+  });
+
+  try {
+    await gameRoom.save();
+    res.status(201).json({ roomId, message: 'Room created successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create room' });
+  }
+});
+
+// Helper function to generate a bingo card
+const generateBingoCard = () => {
+  const getRandomNumbers = (min, max, count) => {
+    const numbers = [];
+    while (numbers.length < count) {
+      const num = Math.floor(Math.random() * (max - min + 1)) + min;
+      if (!numbers.includes(num)) numbers.push(num);
+    }
+    return numbers;
+  };
+
+  const card = {
+    B: getRandomNumbers(1, 15, 5),
+    I: getRandomNumbers(16, 30, 5),
+    N: getRandomNumbers(31, 45, 5),
+    G: getRandomNumbers(46, 60, 5),
+    O: getRandomNumbers(61, 75, 5),
+  };
+  card.N[2] = 'FREE'; // Free space
+  return card;
+};
+
+export default router;
