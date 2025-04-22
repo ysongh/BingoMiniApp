@@ -3,6 +3,11 @@ import GameRoom from '../models/GameRoom.js';
 
 const router = express.Router();
 
+// Generate a random room ID
+const generateRoomId = () => {
+  return Math.random().toString(36).substr(2, 6).toUpperCase();
+};
+
 // Create a new game room
 router.post('/create', async (req, res) => {
   const { username, roomName, maxPlayers } = req.body;

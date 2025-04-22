@@ -11,6 +11,8 @@ import {
 import { ConnectMenu } from '../components/ConnectMenu';
 // @ts-ignore
 import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
+// @ts-ignore
+import { SERVER_URL } from '../utils/config.js';
 
 const Lobby = () => {
   const { address } = useAccount();
@@ -32,7 +34,7 @@ const Lobby = () => {
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
 
-  const handleCreateRoom = async (e: any) => {
+  const handleCreateRoomOnChain = async (e: any) => {
     e.preventDefault();
     try {
       const roomName = e.target.roomName.value;
@@ -47,6 +49,28 @@ const Lobby = () => {
       });
     } catch (error) {
       console.error('Failed to create game:', error);
+    }
+  };
+
+  const handleCreateRoom = async (e) => {
+    e.preventDefault();
+    try {
+      const roomName = e.target.roomName.value;
+      const roomSize = e.target.roomSize.value;
+
+      const response = await fetch(SERVER_URL + 'api/game/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: address, roomName, maxPlayers: roomSize }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create room');
+      }
+      const data = await response.json();
+      navigate(`/game/${data.roomId}`);
+    } catch (err) {
+      console.error('Failed to create room:', err);
+      alert('Failed to create room');
     }
   };
 
