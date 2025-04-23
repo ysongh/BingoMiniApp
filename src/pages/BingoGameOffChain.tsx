@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAccount } from 'wagmi';
+
+// @ts-ignore
+import { SERVER_URL } from '../utils/config.js';
 
 // Define types
 type GameStateType = 'waiting' | 'playing' | 'finished';
@@ -34,7 +39,38 @@ interface ChatMessageType {
   timestamp: string;
 }
 
+interface BingoCard {
+  B: (number | string)[];
+  I: (number | string)[];
+  N: (number | string)[];
+  G: (number | string)[];
+  O: (number | string)[];
+}
+
+interface Player {
+  userId: string;
+  username: string;
+  score: number;
+  bingos: number;
+  bingoCard: BingoCard;
+}
+
+interface GameRoom {
+  _id?: string;
+  roomId: string;
+  name: string;
+  maxPlayers: number;
+  players: Player[];
+  status: 'Waiting' | 'In Progress' | 'Finished';
+  calledNumbers: number[];
+  latestNumber?: { letter: string; number: number };
+  createdAt?: string;
+}
+
 const BingoGameOffChain: React.FC = () => {
+  const { roomId } = useParams<{ roomId: string }>();
+  const { address } = useAccount();
+
   // Game state
   const [gameState, setGameState] = useState<GameStateType>('waiting');
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
@@ -42,12 +78,13 @@ const BingoGameOffChain: React.FC = () => {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [bingoCard, setBingoCard] = useState<BingoCardType>(null);
   const [selectedCells, setSelectedCells] = useState<SelectedCellsType>({});
-  const [players] = useState<PlayerType[]>([
-    { id: 1, name: "JohnDoe", score: 0, bingos: 0 },
-    { id: 2, name: "BingoQueen", score: 120, bingos: 1 },
-    { id: 3, name: "LuckyPlayer", score: 80, bingos: 0 },
-    { id: 4, name: "GameMaster", score: 50, bingos: 0 },
-  ]);
+  const [players, setPlayers] = useState<Player[]>([]);
+  // const [players] = useState<PlayerType[]>([
+  //   { id: 1, name: "JohnDoe", score: 0, bingos: 0 },
+  //   { id: 2, name: "BingoQueen", score: 120, bingos: 1 },
+  //   { id: 3, name: "LuckyPlayer", score: 80, bingos: 0 },
+  //   { id: 4, name: "GameMaster", score: 50, bingos: 0 },
+  // ]);
   const [chat, setChat] = useState<ChatMessageType[]>([
     { id: 1, user: "BingoQueen", message: "Good luck everyone!", timestamp: "12:01" },
     { id: 2, user: "GameMaster", message: "I need just one more number!", timestamp: "12:02" },
@@ -69,6 +106,34 @@ const BingoGameOffChain: React.FC = () => {
       return () => clearInterval(interval);
     }
   }, [gameState]);
+
+  useEffect(() => {
+    const fetchGameState = async () => {
+      try {
+        const response = await fetch(`${SERVER_URL}api/game/room/${roomId}`);
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to fetch game state');
+        }
+        const data: GameRoom = await response.json();
+        console.log(data);
+        setGameState(data.status);
+        setCalledNumbers(data.calledNumbers);
+        setLatestNumber(data.latestNumber || null);
+        setPlayers(data.players);
+        const player = data.players.find((p) => p.username === address);
+        if (player) {
+          setBingoCard(player.bingoCard);
+          setSelectedCells({ N2: true }); // Free space
+        }
+      } catch (err) {
+        console.error('Failed to fetch game state:', err);
+      }
+    };
+
+    fetchGameState();
+  }, [roomId])
+
 
   // Generate a random 5x5 bingo card with free space in center
   const generateBingoCard = (): void => {

@@ -19,7 +19,7 @@ function App() {
           path="/game/test"
           element={<TestBingoGame />} />
         <Route
-          path="/game/offchain/:gameid"
+          path="/game/offchain/:roomId"
           element={<BingoGameOffChain />} />
         <Route
           path="/game/:gameid"

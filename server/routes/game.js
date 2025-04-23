@@ -79,6 +79,20 @@ router.get('/rooms', async (req, res) => {
   }
 });
 
+// Get game state for a specific room
+router.get('/room/:roomId', async (req, res) => {
+  const { roomId } = req.params;
+  try {
+    const gameRoom = await GameRoom.findOne({ roomId });
+    if (!gameRoom) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    res.json(gameRoom);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch game state' });
+  }
+});
+
 // Helper function to generate a bingo card
 const generateBingoCard = () => {
   const getRandomNumbers = (min, max, count) => {
