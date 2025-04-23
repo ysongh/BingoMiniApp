@@ -33,6 +33,35 @@ router.post('/create', async (req, res) => {
   }
 });
 
+// Join a game room
+router.post('/join', async (req, res) => {
+  const { username, roomId } = req.body;
+  if (!username || !roomId) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const gameRoom = await GameRoom.findOne({ roomId });
+    if (!gameRoom) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    if (gameRoom.status !== 'Waiting') {
+      return res.status(400).json({ error: 'Game already in progress or finished' });
+    }
+    if (gameRoom.players.length >= gameRoom.maxPlayers) {
+      return res.status(400).json({ error: 'Room is full' });
+    }
+
+    const bingoCard = generateBingoCard();
+    gameRoom.players.push({ userId: username, username, bingoCard });
+    await gameRoom.save();
+    res.json({ message: 'Joined room successfully', roomId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to join room' });
+  }
+});
+
 // Get all available rooms
 router.get('/rooms', async (req, res) => {
   try {

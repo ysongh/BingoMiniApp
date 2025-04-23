@@ -108,13 +108,28 @@ const Lobby = () => {
   };
 
 
-  const handleJoinRoom = (e: any) => {
+  const handleJoinRoom = async (e: any) => {
     e.preventDefault();
-    if (gameType === 'onchain') {
-      navigate('/game/' + roomCode);
-    }
-    else {
-      navigate('/game/offchain/' + roomCode);
+
+    try {
+      if (gameType === 'onchain') {
+        navigate('/game/' + roomCode);
+      }
+      else {
+        const response = await fetch(SERVER_URL + 'api/game/join', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: address, roomId: roomCode }),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to join room');
+        }
+        const data = await response.json();
+        navigate('/game/offchain/' + data.roomId);
+      }
+    } catch (err) {
+      console.error('Failed to join room:', err);
+      alert('Failed to join room');
     }
    
   };
@@ -225,9 +240,12 @@ const Lobby = () => {
                 <label className="block text-sm font-medium mb-1">Room Size</label>
                 <select id="roomSize" className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500">
                   <option value="1">1 Players</option>
+                  <option value="2">2 Players</option>
+                  <option value="3">3 Players</option>
+                  <option value="4">4 Players</option>
+                  <option value="5">5 Players</option>
                   <option value="10">10 Players</option>
                   <option value="20">20 Players</option>
-                  <option value="30">30 Players</option>
                 </select>
               </div>
               <button
