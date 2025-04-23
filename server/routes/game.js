@@ -52,12 +52,19 @@ router.post('/join', async (req, res) => {
       return res.status(400).json({ error: 'Room is full' });
     }
 
+    // Check if the user is already in the room
+    const existingPlayer = gameRoom.players.find((player) => player.username === username);
+    if (existingPlayer) {
+      // User is already in the room; return success without adding them again
+      return res.json({ message: 'Joined room successfully', roomId });
+    }
+
+    // Add new player
     const bingoCard = generateBingoCard();
     gameRoom.players.push({ userId: username, username, bingoCard });
     await gameRoom.save();
     res.json({ message: 'Joined room successfully', roomId });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: 'Failed to join room' });
   }
 });
