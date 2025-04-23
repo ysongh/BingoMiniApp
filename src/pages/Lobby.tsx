@@ -63,6 +63,7 @@ const Lobby = () => {
 
   const [gameRooms, setGameRooms] =useState<GameRoom[]>([]);
   const [roomCode, setRoomCode] = useState('');
+  const [gameType, setGameType] = useState('');
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
 
@@ -109,7 +110,13 @@ const Lobby = () => {
 
   const handleJoinRoom = (e: any) => {
     e.preventDefault();
-    navigate('/game/' + roomCode);
+    if (gameType === 'onchain') {
+      navigate('/game/' + roomCode);
+    }
+    else {
+      navigate('/game/offchain/' + roomCode);
+    }
+   
   };
 
   const handleQuickJoin = () => {
@@ -298,7 +305,7 @@ const Lobby = () => {
                     {room.players.length}/{room.maxPlayers}
                   </div>
                   <button
-                    onClick={() => navigate('/game/' + room.roomId)}
+                    onClick={() => navigate('/game/offchain/' + room.roomId)}
                     disabled={!address}
                     className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                   >
@@ -343,6 +350,7 @@ const Lobby = () => {
                       <button
                         onClick={() => {
                           setRoomCode(room);
+                          setGameType('onchain');
                           setActiveTab('join');
                         }}
                         disabled={!address}
@@ -375,7 +383,10 @@ const Lobby = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={() => setRoomCode(room.roomId)}
+                        onClick={() => {
+                          setRoomCode(room.roomId);
+                          setGameType('offchain');
+                        }}
                         disabled={room.status !== 'Waiting' || !address}
                         className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                       >

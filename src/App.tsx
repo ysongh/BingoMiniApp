@@ -4,6 +4,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import Lobby from "./pages/Lobby";
 import BingoGame from "./pages/BingoGame";
+import BingoGameOffChain from "./pages/BingoGameOffChain";
 import TestBingoGame from "./pages/TestBingoGame";
 
 function App() {
@@ -17,6 +18,9 @@ function App() {
         <Route
           path="/game/test"
           element={<TestBingoGame />} />
+        <Route
+          path="/game/offchain/:gameid"
+          element={<BingoGameOffChain />} />
         <Route
           path="/game/:gameid"
           element={<BingoGame />} />
