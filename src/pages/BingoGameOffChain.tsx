@@ -48,6 +48,12 @@ interface ChatMessageType {
   timestamp: string;
 }
 
+interface CallNumberResponse {
+  message: string;
+  calledNumbers: number[];
+  latestNumber: { letter: string; number: number };
+}
+
 interface BingoCard {
   B: (number | string)[];
   I: (number | string)[];
@@ -81,7 +87,7 @@ const BingoGameOffChain: React.FC = () => {
   const { address } = useAccount();
 
   // Game state
-  const [gameState, setGameState] = useState<GameStateType>('waiting');
+  const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished'>('waiting');
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [latestNumber, setLatestNumber] = useState<LatestNumberType>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -124,7 +130,7 @@ const BingoGameOffChain: React.FC = () => {
         }
         const data: GameRoom = await response.json();
         console.log(data);
-        setGameState(data.status);
+        setGameState(data.status === 'In Progress' ? 'playing' : data.status);
         setCalledNumbers(data.calledNumbers);
         setLatestNumber(data.latestNumber || null);
         setPlayers(data.players);
@@ -158,6 +164,26 @@ const BingoGameOffChain: React.FC = () => {
       alert(data.message);
     } catch (err) {
       console.error('Failed to start game:', err);
+    }
+  };
+
+  const handleCallNumber = async () => {
+    try {
+      const response = await fetch(`${SERVER_URL}api/game/room/${roomId}/call`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: address }),
+      });
+      if (!response.ok) {
+        const error: ApiError = await response.json();
+        throw new Error(error.error || 'Failed to call number');
+      }
+      const data: CallNumberResponse = await response.json();
+      setCalledNumbers(data.calledNumbers);
+      setLatestNumber(data.latestNumber);
+      setCountdown(15); // Reset countdown (adjust as needed)
+    } catch (err) {
+      console.error('Failed to call number:', err);
     }
   };
 
@@ -337,6 +363,17 @@ const BingoGameOffChain: React.FC = () => {
                   className="w-full py-2 px-4 bg-green-600 text-white font-medium rounded hover:bg-green-700"
                 >
                   Start Game
+                </button>
+              </div>
+            )}
+            {gameState === 'playing' && (
+              <div className="bg-white rounded-lg shadow p-3">
+                <h2 className="text-sm font-medium text-gray-500 mb-2">Call a Number</h2>
+                <button
+                  onClick={handleCallNumber}
+                  className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700"
+                >
+                  Call Random Number
                 </button>
               </div>
             )}

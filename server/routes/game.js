@@ -123,6 +123,55 @@ router.post('/room/:roomId/start', async (req, res) => {
   }
 });
 
+// Call a random number
+router.post('/room/:roomId/call', async (req, res) => {
+  const { roomId } = req.params;
+  const { username } = req.body;
+
+  // Validate input
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+
+  try {
+    const gameRoom = await GameRoom.findOne({ roomId });
+    if (!gameRoom) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    if (gameRoom.status !== 'In Progress') {
+      return res.status(400).json({ error: 'Game is not in progress' });
+    }
+    if (gameRoom.players[0].username !== username) {
+      return res.status(403).json({ error: 'Only the room creator can call numbers' });
+    }
+
+    // Generate a random number from remaining uncalled numbers
+    const allNumbers = Array.from({ length: 75 }, (_, i) => i + 1);
+    const uncalledNumbers = allNumbers.filter((num) => !gameRoom.calledNumbers.includes(num));
+    if (uncalledNumbers.length === 0) {
+      return res.status(400).json({ error: 'No numbers left to call' });
+    }
+
+    const randomIndex = Math.floor(Math.random() * uncalledNumbers.length);
+    const number = uncalledNumbers[randomIndex];
+    const letter = getLetterForNumber(number);
+
+    // Update calledNumbers and latestNumber
+    gameRoom.calledNumbers.push(number);
+    gameRoom.latestNumber = { letter, number };
+
+    await gameRoom.save();
+
+    res.json({
+      message: 'Number called successfully',
+      calledNumbers: gameRoom.calledNumbers,
+      latestNumber: gameRoom.latestNumber,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to call number' });
+  }
+});
+
 // Helper function to generate a bingo card
 const generateBingoCard = () => {
   const getRandomNumbers = (min, max, count) => {
@@ -143,6 +192,15 @@ const generateBingoCard = () => {
   };
   card.N[2] = 'FREE'; // Free space
   return card;
+};
+
+// Helper function to get the letter for a number
+const getLetterForNumber = (number) => {
+  if (number <= 15) return 'B';
+  if (number <= 30) return 'I';
+  if (number <= 45) return 'N';
+  if (number <= 60) return 'G';
+  return 'O';
 };
 
 export default router;
