@@ -93,6 +93,36 @@ router.get('/room/:roomId', async (req, res) => {
   }
 });
 
+// Start the game
+router.post('/room/:roomId/start', async (req, res) => {
+  const { roomId } = req.params;
+  const { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+
+  try {
+    const gameRoom = await GameRoom.findOne({ roomId });
+    if (!gameRoom) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    if (gameRoom.status !== 'Waiting') {
+      return res.status(400).json({ error: 'Game is already started or finished' });
+    }
+    if (gameRoom.players[0].username !== username) {
+      return res.status(403).json({ error: 'Only the room creator can start the game' });
+    }
+
+    gameRoom.status = 'In Progress';
+    await gameRoom.save();
+
+    res.json({ message: 'Game started successfully', status: gameRoom.status });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to start game' });
+  }
+});
+
 // Helper function to generate a bingo card
 const generateBingoCard = () => {
   const getRandomNumbers = (min, max, count) => {

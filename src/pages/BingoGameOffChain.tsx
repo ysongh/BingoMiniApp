@@ -6,7 +6,7 @@ import { useAccount } from 'wagmi';
 import { SERVER_URL } from '../utils/config.js';
 
 // Define types
-type GameStateType = 'waiting' | 'playing' | 'finished';
+type GameStateType = 'Waiting' | 'playing' | 'finished';
 
 type LatestNumberType = {
   letter: string;
@@ -30,6 +30,15 @@ interface PlayerType {
   name: string;
   score: number;
   bingos: number;
+}
+
+interface ApiError {
+  error: string;
+}
+
+interface StartGameResponse {
+  message: string;
+  status: 'Waiting' | 'In Progress' | 'Finished';
 }
 
 interface ChatMessageType {
@@ -85,6 +94,7 @@ const BingoGameOffChain: React.FC = () => {
   //   { id: 3, name: "LuckyPlayer", score: 80, bingos: 0 },
   //   { id: 4, name: "GameMaster", score: 50, bingos: 0 },
   // ]);
+  const [isRoomCreator, setIsRoomCreator] = useState<boolean>(false);
   const [chat, setChat] = useState<ChatMessageType[]>([
     { id: 1, user: "BingoQueen", message: "Good luck everyone!", timestamp: "12:01" },
     { id: 2, user: "GameMaster", message: "I need just one more number!", timestamp: "12:02" },
@@ -95,9 +105,6 @@ const BingoGameOffChain: React.FC = () => {
   // Generate a random bingo card when component loads
   useEffect(() => {
     generateBingoCard();
-    // Start a timer to simulate game starting
-    setTimeout(() => setGameState('playing'), 3000);
-    
     // For demonstration, call a new number every few seconds
     if (gameState === 'playing') {
       const interval = setInterval(() => {
@@ -126,6 +133,7 @@ const BingoGameOffChain: React.FC = () => {
           setBingoCard(player.bingoCard);
           setSelectedCells({ N2: true }); // Free space
         }
+        setIsRoomCreator(data.players[0]?.username === address);
       } catch (err) {
         console.error('Failed to fetch game state:', err);
       }
@@ -134,6 +142,24 @@ const BingoGameOffChain: React.FC = () => {
     fetchGameState();
   }, [roomId])
 
+  const handleStartGame = async () => {
+    try {
+      const response = await fetch(`${SERVER_URL}api/game/room/${roomId}/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: address }),
+      });
+      if (!response.ok) {
+        const error: ApiError = await response.json();
+        throw new Error(error.error || 'Failed to start game');
+      }
+      const data: StartGameResponse = await response.json();
+      setGameState(data.status === 'In Progress' ? 'playing' : data.status);
+      alert(data.message);
+    } catch (err) {
+      console.error('Failed to start game:', err);
+    }
+  };
 
   // Generate a random 5x5 bingo card with free space in center
   const generateBingoCard = (): void => {
@@ -292,6 +318,8 @@ const BingoGameOffChain: React.FC = () => {
     );
   }
 
+  console.log(isRoomCreator, gameState )
+
   return (
     <div className="flex flex-col min-h-screen bg-indigo-50">
       {/* Main game area */}
@@ -300,6 +328,18 @@ const BingoGameOffChain: React.FC = () => {
         <div className="w-full lg:w-2/3 flex flex-col gap-3">
           {/* Latest called number display */}
           <div className="bg-white rounded-lg shadow p-3 flex flex-col items-center">
+            {/* Start Game Button (only for room creator in waiting state) */}
+            {isRoomCreator && gameState === 'Waiting' && (
+              <div className="bg-white rounded-lg shadow p-3">
+                <h2 className="text-sm font-medium text-gray-500 mb-2">Start Game</h2>
+                <button
+                  onClick={handleStartGame}
+                  className="w-full py-2 px-4 bg-green-600 text-white font-medium rounded hover:bg-green-700"
+                >
+                  Start Game
+                </button>
+              </div>
+            )}
             {latestNumber ? (
               <>
                 <div className="text-sm uppercase font-medium text-gray-500">Latest Number</div>
