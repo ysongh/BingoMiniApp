@@ -79,6 +79,16 @@ router.get('/rooms', async (req, res) => {
   }
 });
 
+// Get all rooms (regardless of status)
+router.get('/all-rooms', async (req, res) => {
+  try {
+    const rooms = await GameRoom.find().select('roomId name players maxPlayers status');
+    res.json(rooms);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch all rooms' });
+  }
+});
+
 // Get game state for a specific room
 router.get('/room/:roomId', async (req, res) => {
   const { roomId } = req.params;

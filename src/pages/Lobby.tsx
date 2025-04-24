@@ -34,7 +34,7 @@ const Lobby = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch(SERVER_URL + 'api/game/rooms');
+        const response = await fetch(SERVER_URL + 'api/game/all-rooms');
         if (!response.ok) {
           throw new Error('Failed to fetch rooms');
         }
@@ -405,7 +405,7 @@ const Lobby = () => {
                           setRoomCode(room.roomId);
                           setGameType('offchain');
                         }}
-                        disabled={room.status !== 'Waiting' || !address}
+                        disabled={!address}
                         className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                       >
                         Join
