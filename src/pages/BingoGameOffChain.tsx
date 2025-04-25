@@ -4,9 +4,7 @@ import { useAccount } from 'wagmi';
 
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
-
-// Define types
-type GameStateType = 'Waiting' | 'playing' | 'finished';
+import { GameRoom, ApiError, CallNumberResponse, StartGameResponse, CheckBingoResponse } from '../types';
 
 type LatestNumberType = {
   letter: string;
@@ -20,75 +18,6 @@ type BingoCardType = {
   G: (number | string)[];
   O: (number | string)[];
 } | null;
-
-interface SelectedCellsType {
-  [key: string]: boolean;
-}
-
-interface PlayerType {
-  id: number;
-  name: string;
-  score: number;
-  bingos: number;
-}
-
-interface ApiError {
-  error: string;
-}
-
-interface StartGameResponse {
-  message: string;
-  status: 'Waiting' | 'In Progress' | 'Finished';
-}
-
-interface ChatMessageType {
-  id: number;
-  user: string;
-  message: string;
-  timestamp: string;
-}
-
-interface CallNumberResponse {
-  message: string;
-  calledNumbers: number[];
-  latestNumber: { letter: string; number: number };
-}
-
-interface BingoCard {
-  B: (number | string)[];
-  I: (number | string)[];
-  N: (number | string)[];
-  G: (number | string)[];
-  O: (number | string)[];
-}
-
-interface Player {
-  userId: string;
-  username: string;
-  score: number;
-  bingos: number;
-  bingoCard: BingoCard;
-}
-
-interface GameRoom {
-  _id?: string;
-  roomId: string;
-  name: string;
-  maxPlayers: number;
-  players: Player[];
-  status: 'Waiting' | 'In Progress' | 'Finished';
-  calledNumbers: number[];
-  latestNumber?: { letter: string; number: number };
-  winner?: string;
-  createdAt?: string;
-}
-
-interface CheckBingoResponse {
-  message: string;
-  hasBingo: boolean;
-  winner?: string;
-  status?: 'Waiting' | 'In Progress' | 'Finished';
-}
 
 const BingoGameOffChain: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
