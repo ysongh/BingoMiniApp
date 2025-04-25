@@ -13,18 +13,7 @@ import { ConnectMenu } from '../components/ConnectMenu';
 import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
-
-export interface GameRoom {
-  _id?: string;
-  roomId: string;
-  name: string;
-  maxPlayers: number;
-  players: Player[];
-  status: 'Waiting' | 'In Progress' | 'Finished';
-  calledNumbers: number[];
-  latestNumber?: { letter: string; number: number };
-  createdAt?: string;
-}
+import { GameRoom } from '../types';
 
 const Lobby = () => {
   const { address } = useAccount();
@@ -116,22 +105,12 @@ const Lobby = () => {
         navigate('/game/' + roomCode);
       }
       else {
-        const response = await fetch(SERVER_URL + 'api/game/join', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: address, roomId: roomCode }),
-        });
-        if (!response.ok) {
-          throw new Error('Failed to join room');
-        }
-        const data = await response.json();
-        navigate('/game/offchain/' + data.roomId);
+        navigate('/game/offchain/' + roomCode);
       }
     } catch (err) {
       console.error('Failed to join room:', err);
       alert('Failed to join room');
     }
-   
   };
 
   const handleQuickJoin = () => {

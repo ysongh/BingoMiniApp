@@ -42,34 +42,54 @@ const BingoGameOffChain: React.FC = () => {
   const [winner, setWinner] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchGameState = async () => {
-      try {
-        const response = await fetch(`${SERVER_URL}api/game/room/${roomId}`);
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || 'Failed to fetch game state');
-        }
-        const data: GameRoom = await response.json();
-        console.log(data);
-        setGameState(data.status === 'In Progress' ? 'playing' : data.status);
-        setCalledNumbers(data.calledNumbers);
-        setLatestNumber(data.latestNumber || null);
-        setPlayers(data.players);
-        setMaxPlayers(data.maxPlayers);
-        setWinner(data.winner || null);
-        const player = data.players.find((p) => p.username === address);
-        if (player) {
-          setBingoCard(player.bingoCard);
-          setSelectedCells({ N2: true }); // Free space
-        }
-        setIsRoomCreator(data.players[0]?.username === address);
-      } catch (err) {
-        console.error('Failed to fetch game state:', err);
-      }
-    };
-
     fetchGameState();
   }, [roomId])
+
+  const fetchGameState = async () => {
+    try {
+      const response = await fetch(`${SERVER_URL}api/game/room/${roomId}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to fetch game state');
+      }
+      const data: GameRoom = await response.json();
+      console.log(data);
+      setGameState(data.status === 'In Progress' ? 'playing' : data.status);
+      setCalledNumbers(data.calledNumbers);
+      setLatestNumber(data.latestNumber || null);
+      setPlayers(data.players);
+      setMaxPlayers(data.maxPlayers);
+      setWinner(data.winner || null);
+      const player = data.players.find((p) => p.username === address);
+      if (player) {
+        setBingoCard(player.bingoCard);
+        setSelectedCells({ N2: true }); // Free space
+      }
+      setIsRoomCreator(data.players[0]?.username === address);
+    } catch (err) {
+      console.error('Failed to fetch game state:', err);
+    }
+  };
+
+  const handleJoinGame = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(SERVER_URL + 'api/game/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: address, roomId: roomId }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to join room');
+      }
+      await response.json();
+      fetchGameState();
+    } catch (err) {
+      console.error('Failed to join room:', err);
+      alert('Failed to join room');
+    }
+  };
 
   const handleStartGame = async () => {
     try {
@@ -218,6 +238,21 @@ const BingoGameOffChain: React.FC = () => {
   };
 
   if (!bingoCard) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-indigo-50">
+        <div>
+          <button 
+            onClick={handleJoinGame}
+            className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+          >
+            Join Game
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (maxPlayers === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-indigo-50">
         <div className="text-xl">Loading bingo card...</div>
