@@ -102,12 +102,7 @@ const BingoGameOffChain: React.FC = () => {
   const [bingoCard, setBingoCard] = useState<BingoCardType>(null);
   const [selectedCells, setSelectedCells] = useState<SelectedCellsType>({});
   const [players, setPlayers] = useState<Player[]>([]);
-  // const [players] = useState<PlayerType[]>([
-  //   { id: 1, name: "JohnDoe", score: 0, bingos: 0 },
-  //   { id: 2, name: "BingoQueen", score: 120, bingos: 1 },
-  //   { id: 3, name: "LuckyPlayer", score: 80, bingos: 0 },
-  //   { id: 4, name: "GameMaster", score: 50, bingos: 0 },
-  // ]);
+  const [maxPlayers, setMaxPlayers] = useState<number>(0);
   const [isRoomCreator, setIsRoomCreator] = useState<boolean>(false);
   const [chat, setChat] = useState<ChatMessageType[]>([
     { id: 1, user: "BingoQueen", message: "Good luck everyone!", timestamp: "12:01" },
@@ -131,6 +126,7 @@ const BingoGameOffChain: React.FC = () => {
         setCalledNumbers(data.calledNumbers);
         setLatestNumber(data.latestNumber || null);
         setPlayers(data.players);
+        setMaxPlayers(data.maxPlayers);
         setWinner(data.winner || null);
         const player = data.players.find((p) => p.username === address);
         if (player) {
@@ -406,11 +402,11 @@ const BingoGameOffChain: React.FC = () => {
         <div className="w-full lg:w-1/3 flex flex-col gap-3">
           {/* Players list */}
           <div className="bg-white rounded-lg shadow p-3">
-            <h2 className="text-sm font-medium text-gray-500 mb-2">Players</h2>
+            <h2 className="text-sm font-medium text-gray-500 mb-2">Players {players.length} / {maxPlayers}</h2>
             <div className="space-y-2">
               {players.map(player => (
-                <div key={player.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                  <div className="font-medium">{player.name}</div>
+                <div key={player.userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                  <div className="font-medium">{player.username}</div>
                   <div className="text-sm">
                     <span className="text-indigo-600 font-medium">{player.score}</span> pts
                     {player.bingos > 0 && (
