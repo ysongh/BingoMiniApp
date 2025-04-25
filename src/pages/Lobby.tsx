@@ -74,7 +74,7 @@ const Lobby = () => {
     }
   };
 
-  const handleCreateRoom = async (e: amy) => {
+  const handleCreateRoom = async (e: any) => {
     e.preventDefault();
     try {
       const roomName = e.target.roomName.value;
@@ -218,7 +218,6 @@ const Lobby = () => {
               <div className="mb-3">
                 <label className="block text-sm font-medium mb-1">Room Size</label>
                 <select id="roomSize" className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                  <option value="1">1 Players</option>
                   <option value="2">2 Players</option>
                   <option value="3">3 Players</option>
                   <option value="4">4 Players</option>
