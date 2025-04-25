@@ -85,7 +85,7 @@ const Lobby = () => {
     }
   };
 
-  const handleCreateRoom = async (e) => {
+  const handleCreateRoom = async (e: amy) => {
     e.preventDefault();
     try {
       const roomName = e.target.roomName.value;
@@ -100,7 +100,7 @@ const Lobby = () => {
         throw new Error('Failed to create room');
       }
       const data = await response.json();
-      navigate(`/game/${data.roomId}`);
+      navigate(`/game/offchain/${data.roomId}`);
     } catch (err) {
       console.error('Failed to create room:', err);
       alert('Failed to create room');
