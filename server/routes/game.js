@@ -182,6 +182,56 @@ router.post('/room/:roomId/call', async (req, res) => {
   }
 });
 
+// Check for Bingo
+router.post('/room/:roomId/check-bingo', async (req, res) => {
+  const { roomId } = req.params;
+  const { username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+
+  try {
+    const gameRoom = await GameRoom.findOne({ roomId });
+    if (!gameRoom) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    if (gameRoom.status !== 'In Progress') {
+      return res.status(400).json({ error: 'Game is not in progress' });
+    }
+
+    const player = gameRoom.players.find((p) => p.username === username);
+    if (!player) {
+      return res.status(400).json({ error: 'Player not found in room' });
+    }
+
+    // Check for Bingo
+    const hasBingo = checkBingo(player.bingoCard, gameRoom.calledNumbers);
+    if (hasBingo) {
+      // Update game state
+      gameRoom.status = 'Finished';
+      gameRoom.winner = username;
+      player.bingos += 1;
+      player.score += 100; // Optional: Award points for Bingo
+      await gameRoom.save();
+
+      return res.json({
+        message: 'Bingo confirmed!',
+        hasBingo: true,
+        winner: username,
+        status: gameRoom.status,
+      });
+    }
+
+    return res.json({
+      message: 'No Bingo found',
+      hasBingo: false,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to check Bingo' });
+  }
+});
+
 // Helper function to generate a bingo card
 const generateBingoCard = () => {
   const getRandomNumbers = (min, max, count) => {
@@ -211,6 +261,60 @@ const getLetterForNumber = (number) => {
   if (number <= 45) return 'N';
   if (number <= 60) return 'G';
   return 'O';
+};
+
+// Helper function to check for Bingo
+const checkBingo = (bingoCard, calledNumbers) => {
+  // Convert calledNumbers to a Set for O(1) lookup
+  const calledSet = new Set(calledNumbers);
+
+  // Check rows
+  for (let i = 0; i < 5; i++) {
+    if (
+      ['B', 'I', 'N', 'G', 'O'].every((letter) => {
+        const value = bingoCard[letter][i];
+        return value === 'FREE' || calledSet.has(value);
+      })
+    ) {
+      return true;
+    }
+  }
+
+  // Check columns
+  for (const letter of ['B', 'I', 'N', 'G', 'O']) {
+    if (
+      bingoCard[letter].every((value, index) => {
+        return value === 'FREE' || calledSet.has(value);
+      })
+    ) {
+      return true;
+    }
+  }
+
+  // Check diagonals
+  // Top-left to bottom-right: B0, I1, N2, G3, O4
+  if (
+    [0, 1, 2, 3, 4].every((i) => {
+      const letter = ['B', 'I', 'N', 'G', 'O'][i];
+      const value = bingoCard[letter][i];
+      return value === 'FREE' || calledSet.has(value);
+    })
+  ) {
+    return true;
+  }
+
+  // Top-right to bottom-left: B4, I3, N2, G1, O0
+  if (
+    [0, 1, 2, 3, 4].every((i) => {
+      const letter = ['B', 'I', 'N', 'G', 'O'][4 - i];
+      const value = bingoCard[letter][i];
+      return value === 'FREE' || calledSet.has(value);
+    })
+  ) {
+    return true;
+  }
+
+  return false;
 };
 
 export default router;

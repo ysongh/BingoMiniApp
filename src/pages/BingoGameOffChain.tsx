@@ -79,7 +79,15 @@ interface GameRoom {
   status: 'Waiting' | 'In Progress' | 'Finished';
   calledNumbers: number[];
   latestNumber?: { letter: string; number: number };
+  winner?: string;
   createdAt?: string;
+}
+
+interface CheckBingoResponse {
+  message: string;
+  hasBingo: boolean;
+  winner?: string;
+  status?: 'Waiting' | 'In Progress' | 'Finished';
 }
 
 const BingoGameOffChain: React.FC = () => {
@@ -107,6 +115,7 @@ const BingoGameOffChain: React.FC = () => {
     { id: 3, user: "System", message: "Game will start in 30 seconds", timestamp: "12:03" },
   ]);
   const [chatInput, setChatInput] = useState<string>('');
+  const [winner, setWinner] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGameState = async () => {
@@ -122,6 +131,7 @@ const BingoGameOffChain: React.FC = () => {
         setCalledNumbers(data.calledNumbers);
         setLatestNumber(data.latestNumber || null);
         setPlayers(data.players);
+        setWinner(data.winner || null);
         const player = data.players.find((p) => p.username === address);
         if (player) {
           setBingoCard(player.bingoCard);
@@ -230,10 +240,28 @@ const BingoGameOffChain: React.FC = () => {
     setChatInput('');
   };
 
-  // Call bingo button handler
-  const handleCallBingo = (): void => {
-    alert("BINGO! Verifying your card...");
-    // In a real implementation, this would trigger validation of the player's card
+  const handleCallBingo = async () => {
+    try {
+      const response = await fetch(`${SERVER_URL}api/game/room/${roomId}/check-bingo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: address }),
+      });
+      if (!response.ok) {
+        const error: ApiError = await response.json();
+        throw new Error(error.error || 'Failed to check Bingo');
+      }
+      const data: CheckBingoResponse = await response.json();
+      if (data.hasBingo) {
+        setGameState('finished');
+        setWinner(data.winner || null);
+        alert(`Bingo! ${data.winner} wins!`);
+      } else {
+        alert('No Bingo. Keep playing!');
+      }
+    } catch (err) {
+      console.error('Failed to check Bingo:', err);
+    }
   };
 
   // Render bingo card cell
@@ -305,6 +333,7 @@ const BingoGameOffChain: React.FC = () => {
                 </button>
               </div>
             )}
+            {gameState === 'finished' && `Game Over! ${winner ? `Winner: ${winner}` : ''}`}
             {latestNumber ? (
               <>
                 <div className="text-sm uppercase font-medium text-gray-500">Latest Number</div>

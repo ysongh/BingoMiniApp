@@ -14,6 +14,7 @@ const gameRoomSchema = new mongoose.Schema({
   status: { type: String, enum: ['Waiting', 'In Progress', 'Finished'], default: 'Waiting' },
   calledNumbers: [{ type: Number }],
   latestNumber: { letter: String, number: Number },
+  winner: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
