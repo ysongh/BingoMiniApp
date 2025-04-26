@@ -291,7 +291,9 @@ const Lobby = () => {
                     className={`px-2 py-1 text-xs rounded-full ${
                       room.status === 'Waiting'
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                        : room.status === 'Finished'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
                     }`}
                   >
                     {room.status}
@@ -372,7 +374,9 @@ const Lobby = () => {
                         className={`px-2 py-1 text-xs rounded-full ${
                           room.status === 'Waiting'
                             ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
+                            : room.status === 'Finished'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-yellow-100 text-yellow-800'
                         }`}
                       >
                         {room.status}
