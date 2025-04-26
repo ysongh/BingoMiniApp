@@ -4,7 +4,15 @@ import { useAccount } from 'wagmi';
 
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
-import { GameRoom, ApiError, CallNumberResponse, StartGameResponse, CheckBingoResponse } from '../types';
+import {
+  GameRoom,
+  ApiError,
+  CallNumberResponse,
+  StartGameResponse,
+  CheckBingoResponse,
+  SelectedCellsType,
+  Player
+} from '../types';
 
 type LatestNumberType = {
   letter: string;
@@ -33,12 +41,6 @@ const BingoGameOffChain: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [maxPlayers, setMaxPlayers] = useState<number>(0);
   const [isRoomCreator, setIsRoomCreator] = useState<boolean>(false);
-  const [chat, setChat] = useState<ChatMessageType[]>([
-    { id: 1, user: "BingoQueen", message: "Good luck everyone!", timestamp: "12:01" },
-    { id: 2, user: "GameMaster", message: "I need just one more number!", timestamp: "12:02" },
-    { id: 3, user: "System", message: "Game will start in 30 seconds", timestamp: "12:03" },
-  ]);
-  const [chatInput, setChatInput] = useState<string>('');
   const [winner, setWinner] = useState<string | null>(null);
 
   useEffect(() => {
@@ -167,22 +169,6 @@ const BingoGameOffChain: React.FC = () => {
       // For demo purposes, just check if enough cells are selected
       // In a real game you'd verify they form a valid bingo line
     }
-  };
-
-  // Handle sending a chat message
-  const handleSendChat = (e: React.FormEvent): void => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-    
-    const newMessage: ChatMessageType = {
-      id: chat.length + 1,
-      user: "You",
-      message: chatInput,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    
-    setChat(prev => [...prev, newMessage]);
-    setChatInput('');
   };
 
   const handleCallBingo = async () => {
@@ -382,39 +368,6 @@ const BingoGameOffChain: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
-          
-          {/* Chat */}
-          <div className="bg-white rounded-lg shadow p-3 flex flex-col flex-grow">
-            <h2 className="text-sm font-medium text-gray-500 mb-2">Chat</h2>
-            <div className="flex-grow overflow-y-auto mb-2 space-y-2 max-h-64">
-              {chat.map(msg => (
-                <div key={msg.id} className={`p-2 rounded ${msg.user === 'System' ? 'bg-gray-100 text-gray-600' : 'bg-indigo-50'}`}>
-                  <div className="flex justify-between items-center">
-                    <span className={`font-medium ${msg.user === 'System' ? 'text-gray-500' : 'text-indigo-600'}`}>
-                      {msg.user}
-                    </span>
-                    <span className="text-xs text-gray-400">{msg.timestamp}</span>
-                  </div>
-                  <p className="text-sm">{msg.message}</p>
-                </div>
-              ))}
-            </div>
-            <form onSubmit={handleSendChat} className="flex">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Type a message..."
-                className="flex-grow p-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button
-                type="submit"
-                className="bg-indigo-600 text-white px-4 rounded-r"
-              >
-                Send
-              </button>
-            </form>
           </div>
         </div>
       </main>
