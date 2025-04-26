@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  type BaseError,
-  useAccount,
-  useReadContract,
-  useWriteContract,
-  useWaitForTransactionReceipt
-} from 'wagmi';
+// import {
+//   type BaseError,
+//   useAccount,
+//   useReadContract,
+//   useWriteContract,
+//   useWaitForTransactionReceipt
+// } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { ConnectMenu } from '../components/ConnectMenu';
 // @ts-ignore
@@ -38,17 +39,17 @@ const Lobby = () => {
     fetchRooms();
   }, []);
 
-  const { data: hash, error, writeContract } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = 
-  useWaitForTransactionReceipt({
-    hash,
-  });
+  // const { data: hash, error, writeContract } = useWriteContract();
+  // const { isLoading: isConfirming, isSuccess: isConfirmed } = 
+  // useWaitForTransactionReceipt({
+  //   hash,
+  // });
 
-  const { data: rooms = [] } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: BingoABI,
-    functionName: 'getAllRooms',
-  });
+  // const { data: rooms = [] } = useReadContract({
+  //   address: CONTRACT_ADDRESS,
+  //   abi: BingoABI,
+  //   functionName: 'getAllRooms',
+  // });
 
   const [gameRooms, setGameRooms] =useState<GameRoom[]>([]);
   const [roomCode, setRoomCode] = useState('');
@@ -56,23 +57,23 @@ const Lobby = () => {
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
 
-  const handleCreateRoomOnChain = async (e: any) => {
-    e.preventDefault();
-    try {
-      const roomName = e.target.roomName.value;
-      const roomSize = e.target.roomSize.value;
-      console.log(roomName, roomSize);
+  // const handleCreateRoomOnChain = async (e: any) => {
+  //   e.preventDefault();
+  //   try {
+  //     const roomName = e.target.roomName.value;
+  //     const roomSize = e.target.roomSize.value;
+  //     console.log(roomName, roomSize);
      
-      writeContract({
-        address: CONTRACT_ADDRESS,
-        abi: BingoABI,
-        functionName: 'createRoom',
-        args: [roomName, roomName, roomSize, 0],
-      });
-    } catch (error) {
-      console.error('Failed to create game:', error);
-    }
-  };
+  //     writeContract({
+  //       address: CONTRACT_ADDRESS,
+  //       abi: BingoABI,
+  //       functionName: 'createRoom',
+  //       args: [roomName, roomName, roomSize, 0],
+  //     });
+  //   } catch (error) {
+  //     console.error('Failed to create game:', error);
+  //   }
+  // };
 
   const handleCreateRoom = async (e: any) => {
     e.preventDefault();
@@ -233,11 +234,11 @@ const Lobby = () => {
               >
                 Create Room
               </button>
-              {isConfirming && <div>Waiting for confirmation...</div>}
+              {/* {isConfirming && <div>Waiting for confirmation...</div>}
               {isConfirmed && <div>Transaction confirmed.</div>}
               {error && (
                 <div>Error: {(error as BaseError).shortMessage || error.message}</div>
-              )}
+              )} */}
             </form>
           )}
         </div>
@@ -250,7 +251,7 @@ const Lobby = () => {
           <h2 className="text-lg font-medium mb-3">Available Rooms</h2>
           
           <div className="md:hidden space-y-3">
-            {rooms.map((room: string, index: number) => (
+            {/* {rooms.map((room: string, index: number) => (
               <div key={index} className="border rounded-lg p-3">
                 <div className="flex justify-between items-start mb-2">
                   <div>
@@ -279,7 +280,7 @@ const Lobby = () => {
                   </button>
                 </div>
               </div>
-            ))}
+            ))} */}
             {gameRooms.map((room) => (
               <div key={room.roomId} className="border rounded-lg p-3">
                 <div className="flex justify-between items-start mb-2">
@@ -323,7 +324,7 @@ const Lobby = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {rooms.map((room: string, index: number) => (
+                {/* {rooms.map((room: string, index: number) => (
                   <tr key={index}>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="font-medium">{room}</div>
@@ -356,7 +357,7 @@ const Lobby = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                ))} */}
                 {gameRooms.map((room) => (
                   <tr key={room.roomId}>
                     <td className="px-4 py-4 whitespace-nowrap">
