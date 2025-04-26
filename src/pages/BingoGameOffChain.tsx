@@ -121,6 +121,10 @@ const BingoGameOffChain: React.FC = () => {
       });
       if (!response.ok) {
         const error: ApiError = await response.json();
+        if (response.status === 429 && error.remainingSeconds) {
+          alert(`Please wait ${error.remainingSeconds} seconds before calling another number`);
+          return;
+        }
         throw new Error(error.error || 'Failed to call number');
       }
       const data: CallNumberResponse = await response.json();

@@ -15,6 +15,7 @@ const gameRoomSchema = new mongoose.Schema({
   calledNumbers: [{ type: Number }],
   latestNumber: { letter: String, number: Number },
   winner: { type: String },
+  lastCallTimestamp: { type: Date },
   createdAt: { type: Date, default: Date.now },
 });
 

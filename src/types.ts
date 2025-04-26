@@ -24,6 +24,7 @@ export interface PlayerType {
 
 export interface ApiError {
   error: string;
+  remainingSeconds?: number;
 }
 
 export interface StartGameResponse {

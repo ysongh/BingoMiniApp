@@ -151,8 +151,19 @@ router.post('/room/:roomId/call', async (req, res) => {
     if (gameRoom.status !== 'In Progress') {
       return res.status(400).json({ error: 'Game is not in progress' });
     }
-    if (gameRoom.players[0].username !== username) {
-      return res.status(403).json({ error: 'Only the room creator can call numbers' });
+
+    // Check cooldown (60 seconds)
+    const COOLDOWN_MS = 60 * 1000; // 60 seconds in milliseconds
+    const now = new Date();
+    if (gameRoom.lastCallTimestamp) {
+      const timeElapsed = now - gameRoom.lastCallTimestamp;
+      if (timeElapsed < COOLDOWN_MS) {
+        const remainingSeconds = Math.ceil((COOLDOWN_MS - timeElapsed) / 1000);
+        return res.status(429).json({
+          error: `Please wait ${remainingSeconds} seconds before calling another number`,
+          remainingSeconds,
+        });
+      }
     }
 
     // Generate a random number from remaining uncalled numbers
@@ -169,6 +180,9 @@ router.post('/room/:roomId/call', async (req, res) => {
     // Update calledNumbers and latestNumber
     gameRoom.calledNumbers.push(number);
     gameRoom.latestNumber = { letter, number };
+
+    // Update timestamp
+    gameRoom.lastCallTimestamp = now;
 
     await gameRoom.save();
 
