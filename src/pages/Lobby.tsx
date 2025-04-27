@@ -105,12 +105,28 @@ const Lobby = () => {
     setFilterOption(e.target.value);
 
     if (e.target.value === "all") fetchRooms();
+    else if (e.target.value === "available") fetchInProgressRooms();
     else fetchAvailableRooms();
   }
 
   const fetchRooms = async () => {
     try {
       const response = await fetch(SERVER_URL + 'api/game/all-rooms');
+      if (!response.ok) {
+        throw new Error('Failed to fetch rooms');
+      }
+      const data = await response.json();
+      console.log(data);
+      setGameRooms(data);
+    } catch (err) {
+      console.error('Failed to fetch rooms:', err);
+      alert('Error fetching rooms');
+    }
+  };
+
+  const fetchInProgressRooms = async () => {
+    try {
+      const response = await fetch(SERVER_URL + 'api/game/in-progress-rooms');
       if (!response.ok) {
         throw new Error('Failed to fetch rooms');
       }
@@ -284,6 +300,7 @@ const Lobby = () => {
               >
                 <option value="all">All Games</option>
                 <option value="available">Available Games</option>
+                <option value="in progress">In Progress Games</option>
               </select>
             </div>
           </div>

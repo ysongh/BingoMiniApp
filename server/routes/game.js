@@ -79,6 +79,16 @@ router.get('/rooms', async (req, res) => {
   }
 });
 
+// Get all in progress rooms
+router.get('/in-progress-rooms', async (req, res) => {
+  try {
+    const rooms = await GameRoom.find({ status: 'In Progress' }).select('roomId name players maxPlayers status');
+    res.json(rooms);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch rooms' });
+  }
+});
+
 // Get all rooms (regardless of status)
 router.get('/all-rooms', async (req, res) => {
   try {
