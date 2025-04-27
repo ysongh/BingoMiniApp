@@ -22,20 +22,6 @@ const Lobby = () => {
 
   // Fetch available rooms on mount
   useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await fetch(SERVER_URL + 'api/game/all-rooms');
-        if (!response.ok) {
-          throw new Error('Failed to fetch rooms');
-        }
-        const data = await response.json();
-        console.log(data);
-        setGameRooms(data);
-      } catch (err) {
-        console.error('Failed to fetch rooms:', err);
-        alert('Error fetching rooms');
-      }
-    };
     fetchRooms();
   }, []);
 
@@ -54,6 +40,7 @@ const Lobby = () => {
   const [gameRooms, setGameRooms] =useState<GameRoom[]>([]);
   const [roomCode, setRoomCode] = useState('');
   const [gameType, setGameType] = useState('');
+  const [filterOption, setFilterOption] = useState('all');
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
 
@@ -111,6 +98,43 @@ const Lobby = () => {
     } catch (err) {
       console.error('Failed to join room:', err);
       alert('Failed to join room');
+    }
+  };
+
+  const handleFilterRoom = async (e: any) => {
+    setFilterOption(e.target.value);
+
+    if (e.target.value === "all") fetchRooms();
+    else fetchAvailableRooms();
+  }
+
+  const fetchRooms = async () => {
+    try {
+      const response = await fetch(SERVER_URL + 'api/game/all-rooms');
+      if (!response.ok) {
+        throw new Error('Failed to fetch rooms');
+      }
+      const data = await response.json();
+      console.log(data);
+      setGameRooms(data);
+    } catch (err) {
+      console.error('Failed to fetch rooms:', err);
+      alert('Error fetching rooms');
+    }
+  };
+
+  const fetchAvailableRooms = async () => {
+    try {
+      const response = await fetch(SERVER_URL + 'api/game/rooms');
+      if (!response.ok) {
+        throw new Error('Failed to fetch rooms');
+      }
+      const data = await response.json();
+      console.log(data);
+      setGameRooms(data);
+    } catch (err) {
+      console.error('Failed to fetch rooms:', err);
+      alert('Error fetching rooms');
     }
   };
 
@@ -248,7 +272,21 @@ const Lobby = () => {
             activeSection === 'rooms' || window.innerWidth >= 768 ? 'block' : 'hidden'
           }`}
         >
-          <h2 className="text-lg font-medium mb-3">Available Rooms</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3">
+            <h2 className="text-lg font-medium mb-3">Games</h2>
+
+            {/* Search and Filter Options */}
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <select
+                value={filterOption}
+                onChange={handleFilterRoom}
+                className="p-1 border border-gray-300 rounded text-sm w-full sm:w-auto"
+              >
+                <option value="all">All Games</option>
+                <option value="available">Available Games</option>
+              </select>
+            </div>
+          </div>
           
           <div className="md:hidden space-y-3">
             {/* {rooms.map((room: string, index: number) => (
