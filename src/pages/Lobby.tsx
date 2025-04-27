@@ -15,6 +15,7 @@ import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
 import { GameRoom } from '../types';
+import { LoadingSpinner } from '../components/LoadingSpinner.js';
 
 const Lobby = () => {
   const { address } = useAccount();
@@ -41,6 +42,7 @@ const Lobby = () => {
   const [roomCode, setRoomCode] = useState('');
   const [gameType, setGameType] = useState('');
   const [filterOption, setFilterOption] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
 
@@ -111,6 +113,8 @@ const Lobby = () => {
 
   const fetchRooms = async () => {
     try {
+      setIsLoading(true);
+
       const response = await fetch(SERVER_URL + 'api/game/all-rooms');
       if (!response.ok) {
         throw new Error('Failed to fetch rooms');
@@ -121,11 +125,15 @@ const Lobby = () => {
     } catch (err) {
       console.error('Failed to fetch rooms:', err);
       alert('Error fetching rooms');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchInProgressRooms = async () => {
     try {
+      setIsLoading(true);
+
       const response = await fetch(SERVER_URL + 'api/game/in-progress-rooms');
       if (!response.ok) {
         throw new Error('Failed to fetch rooms');
@@ -136,11 +144,15 @@ const Lobby = () => {
     } catch (err) {
       console.error('Failed to fetch rooms:', err);
       alert('Error fetching rooms');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchAvailableRooms = async () => {
     try {
+      setIsLoading(true);
+
       const response = await fetch(SERVER_URL + 'api/game/rooms');
       if (!response.ok) {
         throw new Error('Failed to fetch rooms');
@@ -151,6 +163,8 @@ const Lobby = () => {
     } catch (err) {
       console.error('Failed to fetch rooms:', err);
       alert('Error fetching rooms');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -304,8 +318,10 @@ const Lobby = () => {
               </select>
             </div>
           </div>
+
+          {isLoading && <LoadingSpinner />}
           
-          <div className="md:hidden space-y-3">
+          {!isLoading && <div className="md:hidden space-y-3">
             {/* {rooms.map((room: string, index: number) => (
               <div key={index} className="border rounded-lg p-3">
                 <div className="flex justify-between items-start mb-2">
@@ -368,9 +384,9 @@ const Lobby = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </div>}
 
-          <div className="hidden md:block overflow-x-auto">
+          {!isLoading && <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -453,7 +469,7 @@ const Lobby = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div>}
         </div>
       </main>
     </div>
