@@ -32,7 +32,7 @@ const BingoGameOffChain: React.FC = () => {
   const { address } = useAccount();
 
   // Game state
-  const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished'>('waiting');
+  const [gameState, setGameState] = useState<'Waiting' | 'playing' | 'Finished'>('Waiting');
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [latestNumber, setLatestNumber] = useState<LatestNumberType>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -188,7 +188,7 @@ const BingoGameOffChain: React.FC = () => {
       }
       const data: CheckBingoResponse = await response.json();
       if (data.hasBingo) {
-        setGameState('finished');
+        setGameState('Finished');
         setWinner(data.winner || null);
         alert(`Bingo! ${data.winner} wins!`);
       } else {
@@ -283,7 +283,7 @@ const BingoGameOffChain: React.FC = () => {
                 </button>
               </div>
             )}
-            {gameState === 'finished' && `Game Over! ${winner ? `Winner: ${winner}` : ''}`}
+            {gameState === 'Finished' && `Game Over! ${winner ? `Winner: ${winner}` : ''}`}
             {latestNumber ? (
               <>
                 <div className="text-sm uppercase font-medium text-gray-500">Latest Number</div>
