@@ -298,7 +298,7 @@ const BingoGameOffChain: React.FC = () => {
                 )}
               </>
             ) : (
-              gameState === 'waiting' ? (
+              gameState === 'Waiting' ? (
                 <div className="py-2 text-gray-500">Waiting for game to start...</div>
               ) : (
                 <div className="py-2 text-gray-500">First number coming up...</div>

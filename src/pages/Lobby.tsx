@@ -202,7 +202,7 @@ const Lobby = () => {
                 disabled={!address}
                 className="w-full mt-2 py-2 px-4 bg-green-600 text-white font-medium rounded hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed"
               >
-                Quick Join
+                Single Player
               </button>
             </form>
           ) : (
