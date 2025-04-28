@@ -1,1 +1,15 @@
-{}
+{
+  "frame": {
+    "version": "1",
+    "name": "Bingo MiniApp",
+    "iconUrl": "https://raw.githubusercontent.com/ysongh/BingoMiniApp/8448a135ce372bbef7c32a07b0c1e7ddad03c700/public/images/logo.png",
+    "homeUrl": "https://bingominiapp.netlify.app",
+    "splashImageUrl": "https://raw.githubusercontent.com/ysongh/BingoMiniApp/8448a135ce372bbef7c32a07b0c1e7ddad03c700/public/images/logo.png",
+    "splashBackgroundColor": "#f5f0ec",
+    "subtitle": "Play and win!",
+    "description": "Experience the classic game of Bingo with a modern twist.",
+    "screenshotUrls": [],
+    "primaryCategory": "games",
+    "tags": ["bingo", "game", "fun"]
+  }
+}
