@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
+import BingoGameHeader from '../components/BingoGameHeader.js';
+
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
 import {
@@ -254,6 +256,8 @@ const BingoGameOffChain: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-indigo-50">
+      <BingoGameHeader />
+      
       {/* Main game area */}
       <main className="flex flex-col lg:flex-row flex-1 p-3 gap-3">
         {/* Left side - Bingo card and game controls */}

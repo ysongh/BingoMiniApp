@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import BingoGameHeader from '../components/BingoGameHeader';
+
 // Define types
 type GameStateType = 'waiting' | 'playing' | 'finished';
 
@@ -229,6 +231,7 @@ const TestBingoGame: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-indigo-50">
+      <BingoGameHeader />
       {/* Main game area */}
       <main className="flex flex-col lg:flex-row flex-1 p-3 gap-3">
         {/* Left side - Bingo card and game controls */}
