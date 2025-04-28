@@ -55,10 +55,10 @@ const BingoGame: React.FC = () => {
   const { address } = useAccount();
 
   // Game state
-  const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
-  const [latestNumber, setLatestNumber] = useState<LatestNumberType>(null);
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [bingoCard, setBingoCard] = useState<BingoCardType>(null);
+  const [calledNumbers] = useState<number[]>([]);
+  const [latestNumber] = useState<LatestNumberType>(null);
+  const [countdown] = useState<number | null>(null);
+  const [bingoCard] = useState<BingoCardType>(null);
   const [selectedCells, setSelectedCells] = useState<SelectedCellsType>({});
   const [players] = useState<PlayerType[]>([
     { id: 1, name: "JohnDoe", score: 0, bingos: 0 },
@@ -158,19 +158,6 @@ const BingoGame: React.FC = () => {
     } catch (error) {
       console.error('Failed to call the number:', error);
     }
-  };
-
-
-  // Get array of unique random numbers within a range
-  const getRandomNumbers = (min: number, max: number, count: number): number[] => {
-    const numbers: number[] = [];
-    while (numbers.length < count) {
-      const num = Math.floor(Math.random() * (max - min + 1)) + min;
-      if (!numbers.includes(num)) {
-        numbers.push(num);
-      }
-    }
-    return numbers;
   };
 
   // Get the corresponding BINGO letter for a number
@@ -396,6 +383,7 @@ const BingoGame: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-3">
             <h2 className="text-sm font-medium text-gray-500 mb-2">Called Numbers</h2>
             <div className="grid grid-cols-5 sm:grid-cols-10 gap-1">
+              {/* @ts-ignore */}
               {roomdata[7].map(num => {
                 const letter = getLetterForNumber(num);
                 return (

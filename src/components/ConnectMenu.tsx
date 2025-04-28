@@ -3,7 +3,6 @@ import {
   useConnect,
   useChains,
   useChainId,
-  useSignMessage
 } from "wagmi";
 
 import { formatAddress } from "../utils/format";
@@ -38,31 +37,31 @@ export function ConnectMenu() {
   );
 }
 
-function SignButton() {
-  const { signMessage, isPending, data, error } = useSignMessage();
+// function SignButton() {
+//   const { signMessage, isPending, data, error } = useSignMessage();
 
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => signMessage({ message: "hello world" })}
-        disabled={isPending}
-        className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed"
-      >
-        {isPending ? "Signing..." : "Sign message"}
-      </button>
-      {data && (
-        <>
-          <div>Signature</div>
-          <div>{data}</div>
-        </>
-      )}
-      {error && (
-        <>
-          <div>Error</div>
-          <div>{error.message}</div>
-        </>
-      )}
-    </>
-  );
-}
+//   return (
+//     <>
+//       <button
+//         type="button"
+//         onClick={() => signMessage({ message: "hello world" })}
+//         disabled={isPending}
+//         className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed"
+//       >
+//         {isPending ? "Signing..." : "Sign message"}
+//       </button>
+//       {data && (
+//         <>
+//           <div>Signature</div>
+//           <div>{data}</div>
+//         </>
+//       )}
+//       {error && (
+//         <>
+//           <div>Error</div>
+//           <div>{error.message}</div>
+//         </>
+//       )}
+//     </>
+//   );
+// }
