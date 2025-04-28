@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
 import BingoGameHeader from '../components/BingoGameHeader.js';
+import { formatAddress } from '../utils/format.js';
 
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
@@ -257,7 +258,7 @@ const BingoGameOffChain: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-indigo-50">
       <BingoGameHeader />
-      
+
       {/* Main game area */}
       <main className="flex flex-col lg:flex-row flex-1 p-3 gap-3">
         {/* Left side - Bingo card and game controls */}
@@ -364,7 +365,7 @@ const BingoGameOffChain: React.FC = () => {
             <div className="space-y-2">
               {players.map(player => (
                 <div key={player.userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                  <div className="font-medium">{player.username}</div>
+                  <div className="font-medium">{formatAddress(player.username || "")}</div>
                   <div className="text-sm">
                     <span className="text-indigo-600 font-medium">{player.score}</span> pts
                     {player.bingos > 0 && (
