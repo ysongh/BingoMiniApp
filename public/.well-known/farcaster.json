@@ -1,10 +1,15 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjIxODk1MCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDREYkRkMEZkNTk5MzIzMGQ5ZGIyMzdFRmVCNjI3QjY4OTNDN2QwOTgifQ",
+    "payload": "eyJkb21haW4iOiJiaW5nb21pbmlhcHAubmV0bGlmeS5hcHAifQ",
+    "signature": "MHgzM2I4MTcxYWFjMWRiZTgwZTkxY2I2MWYwYmU3OTAwODM2MmZkMTUwZGNiNDg3ZDYzMGZkZWQwY2U1MDY2YTc4N2FiMWNkM2IxYjMwNWUxOGEwNDE1Nzg3Zjg1YjI0ZTFiY2EzNzc5MmYxNGI3OGQzNGQwMjI0MmM2M2Y5OGYyNDFj"
+  },
   "frame": {
     "version": "1",
     "name": "Bingo MiniApp",
     "iconUrl": "https://bingominiapp.netlify.app/images/logo.png",
     "homeUrl": "https://bingominiapp.netlify.app",
-    "imageUrl": "https://bingominiapp.netlify.app/images/logo.png",
+    "imageUrl": "https://bingominiapp.netlify.app/images/logo3x2.png",
     "splashImageUrl": "https://bingominiapp.netlify.app/images/logo.png",
     "splashBackgroundColor": "#f5f0ec",
     "subtitle": "Play and win!",
