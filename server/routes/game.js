@@ -159,8 +159,8 @@ router.post('/room/:roomId/call', async (req, res) => {
       return res.status(400).json({ error: 'Game is not in progress' });
     }
 
-    // Check cooldown (60 seconds)
-    const COOLDOWN_MS = 60 * 1000; // 60 seconds in milliseconds
+    // Check cooldown (5 seconds)
+    const COOLDOWN_MS = 5 * 1000; // 5 seconds in milliseconds
     const now = new Date();
     if (gameRoom.lastCallTimestamp) {
       const timeElapsed = now - gameRoom.lastCallTimestamp;
