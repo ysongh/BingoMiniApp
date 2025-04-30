@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 // } from 'wagmi';
 import { useAccount } from 'wagmi';
 
-import { ConnectMenu } from '../components/ConnectMenu';
 // @ts-ignore
 import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
 // @ts-ignore
@@ -107,8 +106,8 @@ const Lobby = () => {
     setFilterOption(e.target.value);
 
     if (e.target.value === "all") fetchRooms();
-    else if (e.target.value === "available") fetchInProgressRooms();
-    else fetchAvailableRooms();
+    else if (e.target.value === "available") fetchAvailableRooms();
+    else fetchInProgressRooms();
   }
 
   const fetchRooms = async () => {
@@ -203,10 +202,6 @@ const Lobby = () => {
             activeSection === 'actions' || window.innerWidth >= 768 ? 'block' : 'hidden'
           }`}
         >
-          <div className="mb-4">
-            <ConnectMenu />
-          </div>
-
           <div className="flex border-b border-gray-200 mb-4">
             <button
               onClick={() => setActiveTab('join')}

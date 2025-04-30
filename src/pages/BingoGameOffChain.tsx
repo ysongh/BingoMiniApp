@@ -216,7 +216,7 @@ const BingoGameOffChain: React.FC = () => {
         key={`${letter}${index}`}
         onClick={() => handleCellClick(letter, index)}
         className={`
-          flex items-center justify-center aspect-square
+          flex items-center justify-center aspect-square text-black
           text-lg font-medium border border-gray-300
           ${isFree ? 'bg-yellow-100 text-yellow-800' : ''}
           ${isSelected ? 'bg-green-500 text-white' : ''}
@@ -365,7 +365,7 @@ const BingoGameOffChain: React.FC = () => {
             <div className="space-y-2">
               {players.map(player => (
                 <div key={player.userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                  <div className="font-medium">{formatAddress(player.username || "")}</div>
+                  <div className="font-medium text-black">{formatAddress(player.username || "")}</div>
                   <div className="text-sm">
                     <span className="text-indigo-600 font-medium">{player.score}</span> pts
                     {player.bingos > 0 && (
