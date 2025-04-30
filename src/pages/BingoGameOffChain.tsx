@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
+import ErrorAlert from '../components/ErrorAlert.js';
 import BingoGameHeader from '../components/BingoGameHeader.js';
 import { formatAddress } from '../utils/format.js';
 
@@ -44,6 +45,7 @@ const BingoGameOffChain: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [maxPlayers, setMaxPlayers] = useState<number>(0);
   const [isRoomCreator, setIsRoomCreator] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [winner, setWinner] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,6 +54,8 @@ const BingoGameOffChain: React.FC = () => {
 
   const fetchGameState = async () => {
     try {
+      setErrorMessage("");
+
       const response = await fetch(`${SERVER_URL}api/game/room/${roomId}`);
       if (!response.ok) {
         const error = await response.json();
@@ -73,6 +77,7 @@ const BingoGameOffChain: React.FC = () => {
       setIsRoomCreator(data.players[0]?.username === address);
     } catch (err) {
       console.error('Failed to fetch game state:', err);
+      setErrorMessage("Failed to load the game");
     }
   };
 
@@ -80,6 +85,7 @@ const BingoGameOffChain: React.FC = () => {
     e.preventDefault();
 
     try {
+      setErrorMessage("");
       const response = await fetch(SERVER_URL + 'api/game/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -92,12 +98,14 @@ const BingoGameOffChain: React.FC = () => {
       fetchGameState();
     } catch (err) {
       console.error('Failed to join room:', err);
-      alert('Failed to join room');
+      setErrorMessage('Failed to join room');
     }
   };
 
   const handleStartGame = async () => {
     try {
+      setErrorMessage("");
+
       const response = await fetch(`${SERVER_URL}api/game/room/${roomId}/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -112,11 +120,14 @@ const BingoGameOffChain: React.FC = () => {
       alert(data.message);
     } catch (err) {
       console.error('Failed to start game:', err);
+      setErrorMessage('Failed to start game');
     }
   };
 
   const handleCallNumber = async () => {
     try {
+      setErrorMessage("");
+
       const response = await fetch(`${SERVER_URL}api/game/room/${roomId}/call`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -125,7 +136,7 @@ const BingoGameOffChain: React.FC = () => {
       if (!response.ok) {
         const error: ApiError = await response.json();
         if (response.status === 429 && error.remainingSeconds) {
-          alert(`Please wait ${error.remainingSeconds} seconds before calling another number`);
+          setErrorMessage(`Please wait ${error.remainingSeconds} seconds before calling another number`);
           return;
         }
         throw new Error(error.error || 'Failed to call number');
@@ -136,6 +147,7 @@ const BingoGameOffChain: React.FC = () => {
       setCountdown(15); // Reset countdown (adjust as needed)
     } catch (err) {
       console.error('Failed to call number:', err);
+      setErrorMessage('Failed to call number');
     }
   };
     
@@ -180,6 +192,7 @@ const BingoGameOffChain: React.FC = () => {
 
   const handleCallBingo = async () => {
     try {
+      setErrorMessage("");
       const response = await fetch(`${SERVER_URL}api/game/room/${roomId}/check-bingo`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -195,10 +208,11 @@ const BingoGameOffChain: React.FC = () => {
         setWinner(data.winner || null);
         alert(`Bingo! ${data.winner} wins!`);
       } else {
-        alert('No Bingo. Keep playing!');
+        setErrorMessage('No Bingo. Keep playing!');
       }
     } catch (err) {
       console.error('Failed to check Bingo:', err);
+      setErrorMessage('Failed to check Bingo');
     }
   };
 
@@ -258,6 +272,7 @@ const BingoGameOffChain: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-indigo-50">
       <BingoGameHeader />
+      {errorMessage && <ErrorAlert message={errorMessage} />}
 
       {/* Main game area */}
       <main className="flex flex-col lg:flex-row flex-1 p-3 gap-3">
@@ -265,7 +280,7 @@ const BingoGameOffChain: React.FC = () => {
         <div className="w-full lg:w-2/3 flex flex-col gap-3">
           {/* Latest called number display */}
           <div className="bg-white rounded-lg shadow p-3 flex flex-col items-center">
-            {/* Start Game Button (only for room creator in waiting state) */}
+            {/* Start Game Button */}
             {gameState === 'Waiting' && (
               <div className="bg-white rounded-lg shadow p-3">
                 <h2 className="text-sm font-medium text-gray-500 mb-2">Start Game</h2>

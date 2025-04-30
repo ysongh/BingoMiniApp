@@ -15,6 +15,7 @@ import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
 import { SERVER_URL } from '../utils/config.js';
 import { GameRoom } from '../types';
 import { LoadingSpinner } from '../components/LoadingSpinner.js';
+import ErrorAlert from '../components/ErrorAlert.js';
 
 const Lobby = () => {
   const { address } = useAccount();
@@ -44,6 +45,7 @@ const Lobby = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
+ const [errorMessage, setErrorMessage] = useState<string>("");
 
   // const handleCreateRoomOnChain = async (e: any) => {
   //   e.preventDefault();
@@ -112,6 +114,7 @@ const Lobby = () => {
 
   const fetchRooms = async () => {
     try {
+      setErrorMessage("");
       setIsLoading(true);
 
       const response = await fetch(SERVER_URL + 'api/game/all-rooms');
@@ -123,7 +126,7 @@ const Lobby = () => {
       setGameRooms(data);
     } catch (err) {
       console.error('Failed to fetch rooms:', err);
-      alert('Error fetching rooms');
+      setErrorMessage('Error fetching rooms');
     } finally {
       setIsLoading(false);
     }
@@ -131,6 +134,7 @@ const Lobby = () => {
 
   const fetchInProgressRooms = async () => {
     try {
+      setErrorMessage("");
       setIsLoading(true);
 
       const response = await fetch(SERVER_URL + 'api/game/in-progress-rooms');
@@ -142,7 +146,7 @@ const Lobby = () => {
       setGameRooms(data);
     } catch (err) {
       console.error('Failed to fetch rooms:', err);
-      alert('Error fetching rooms');
+      setErrorMessage('Error fetching rooms');
     } finally {
       setIsLoading(false);
     }
@@ -150,6 +154,7 @@ const Lobby = () => {
 
   const fetchAvailableRooms = async () => {
     try {
+      setErrorMessage("");
       setIsLoading(true);
 
       const response = await fetch(SERVER_URL + 'api/game/rooms');
@@ -161,7 +166,7 @@ const Lobby = () => {
       setGameRooms(data);
     } catch (err) {
       console.error('Failed to fetch rooms:', err);
-      alert('Error fetching rooms');
+      setErrorMessage('Error fetching rooms');
     } finally {
       setIsLoading(false);
     }
@@ -173,6 +178,7 @@ const Lobby = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-indigo-50 text-gray-800">
+      {errorMessage && <ErrorAlert message={errorMessage} />}
       <div className="flex bg-indigo-100 md:hidden">
         <button
           onClick={() => setActiveSection('actions')}
