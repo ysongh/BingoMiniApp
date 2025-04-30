@@ -130,9 +130,6 @@ router.post('/room/:roomId/start', async (req, res) => {
     if (gameRoom.status !== 'Waiting') {
       return res.status(400).json({ error: 'Game is already started or finished' });
     }
-    if (gameRoom.players[0].username !== username) {
-      return res.status(403).json({ error: 'Only the room creator can start the game' });
-    }
 
     gameRoom.status = 'In Progress';
     await gameRoom.save();

@@ -266,7 +266,7 @@ const BingoGameOffChain: React.FC = () => {
           {/* Latest called number display */}
           <div className="bg-white rounded-lg shadow p-3 flex flex-col items-center">
             {/* Start Game Button (only for room creator in waiting state) */}
-            {isRoomCreator && gameState === 'Waiting' && (
+            {gameState === 'Waiting' && (
               <div className="bg-white rounded-lg shadow p-3">
                 <h2 className="text-sm font-medium text-gray-500 mb-2">Start Game</h2>
                 <button
