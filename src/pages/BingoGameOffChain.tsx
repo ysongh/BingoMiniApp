@@ -50,6 +50,13 @@ const BingoGameOffChain: React.FC = () => {
 
   useEffect(() => {
     fetchGameState();
+
+    const interval = setInterval(() => {
+      fetchGameState();
+    }, 5000);
+
+    return () => clearInterval(interval);
+
   }, [roomId])
 
   const fetchGameState = async () => {
@@ -311,7 +318,7 @@ const BingoGameOffChain: React.FC = () => {
                   <div className="bg-indigo-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center">
                     {latestNumber.letter}
                   </div>
-                  <div className="text-4xl font-bold">{latestNumber.number}</div>
+                  <div className="text-4xl font-bold text-black">{latestNumber.number}</div>
                 </div>
                 {countdown !== null && (
                   <div className="mt-1 text-sm">Next number in: {countdown}s</div>
