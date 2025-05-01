@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
+import { sdk } from '@farcaster/frame-sdk';
 
 import ErrorAlert from '../components/ErrorAlert.js';
 import BingoGameHeader from '../components/BingoGameHeader.js';
@@ -88,6 +89,28 @@ const BingoGameOffChain: React.FC = () => {
     }
   };
 
+  const handleComposeCast = async () => {
+    try {
+      const result = await sdk.actions.composeCast({
+        text: 'Play with me in Bingo Mini App! 🎉',
+        embeds: [`https://bingominiapp.netlify.app//#/game/offchain/${roomId}`],
+        // Optional: parent cast reference
+        // parent: { type: 'cast', hash: '0xabc123...' },
+        // Optional: close the app after composing
+        // close: true,
+      });
+  
+      if (result) {
+        console.log('Cast composed:', result.cast);
+      } else {
+        console.log('Cast composition was closed or canceled.');
+      }
+    } catch (error) {
+      console.error('Error composing cast:', error);
+    }
+  };
+  
+
   const handleJoinGame = async (e: any) => {
     e.preventDefault();
 
@@ -151,7 +174,7 @@ const BingoGameOffChain: React.FC = () => {
       const data: CallNumberResponse = await response.json();
       setCalledNumbers(data.calledNumbers);
       setLatestNumber(data.latestNumber);
-      setCountdown(15); // Reset countdown (adjust as needed)
+      setCountdown(5); // Reset countdown (adjust as needed)
     } catch (err) {
       console.error('Failed to call number:', err);
       setErrorMessage('Failed to call number');
@@ -287,6 +310,12 @@ const BingoGameOffChain: React.FC = () => {
         <div className="w-full lg:w-2/3 flex flex-col gap-3">
           {/* Latest called number display */}
           <div className="bg-white rounded-lg shadow p-3 flex flex-col items-center">
+            <button
+              onClick={handleComposeCast}
+               className="w-full py-2 px-4 bg-green-600 text-white font-medium rounded hover:bg-green-700"
+            >
+              Share on Warpcast 🚀
+            </button>
             {/* Start Game Button */}
             {gameState === 'Waiting' && (
               <div className="bg-white rounded-lg shadow p-3">
