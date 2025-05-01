@@ -276,14 +276,17 @@ const BingoGameOffChain: React.FC = () => {
 
   if (!bingoCard) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-indigo-50">
-        <div>
-          <button 
-            onClick={handleJoinGame}
-            className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-          >
-            Join Game
-          </button>
+      <div>
+        {errorMessage && <ErrorAlert message={errorMessage} />}
+        <div className="flex items-center justify-center min-h-screen bg-indigo-50">
+          <div>
+            <button 
+              onClick={handleJoinGame}
+              className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+            >
+              Join Game
+            </button>
+          </div>
         </div>
       </div>
     );
