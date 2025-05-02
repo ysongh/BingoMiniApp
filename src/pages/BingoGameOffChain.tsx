@@ -52,11 +52,11 @@ const BingoGameOffChain: React.FC = () => {
   useEffect(() => {
     fetchGameState();
 
-    const interval = setInterval(() => {
-      fetchGameState();
-    }, 5000);
+    // const interval = setInterval(() => {
+    //   fetchGameState();
+    // }, 5000);
 
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
 
   }, [roomId])
 
@@ -308,62 +308,89 @@ const BingoGameOffChain: React.FC = () => {
       {errorMessage && <ErrorAlert message={errorMessage} />}
 
       {/* Main game area */}
-      <main className="flex flex-col lg:flex-row flex-1 p-3 gap-3">
+      <main className="flex justify-center align-middle p-3 gap-3">
         {/* Left side - Bingo card and game controls */}
-        <div className="w-full lg:w-2/3 flex flex-col gap-3">
-          {/* Latest called number display */}
-          <div className="bg-white rounded-lg shadow p-3 flex flex-col items-center">
-            <button
-              onClick={handleComposeCast}
-               className="w-full py-2 px-4 bg-green-600 text-white font-medium rounded hover:bg-green-700"
-            >
-              Share on Warpcast 🚀
-            </button>
-            {/* Start Game Button */}
-            {gameState === 'Waiting' && (
-              <div className="bg-white rounded-lg shadow p-3">
-                <h2 className="text-sm font-medium text-gray-500 mb-2">Start Game</h2>
-                <button
-                  onClick={handleStartGame}
-                  className="w-full py-2 px-4 bg-green-600 text-white font-medium rounded hover:bg-green-700"
-                >
-                  Start Game
-                </button>
-              </div>
-            )}
-            {gameState === 'playing' && (
-              <div className="bg-white rounded-lg shadow p-3">
-                <h2 className="text-sm font-medium text-gray-500 mb-2">Call a Number</h2>
-                <button
-                  onClick={handleCallNumber}
-                  className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700"
-                >
-                  Call Random Number
-                </button>
-              </div>
-            )}
-            {gameState === 'Finished' && `Game Over! ${winner ? `Winner: ${winner}` : ''}`}
-            {latestNumber ? (
-              <>
-                <div className="text-sm uppercase font-medium text-gray-500">Latest Number</div>
-                <div className="flex items-center gap-2">
-                  <div className="bg-indigo-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center">
-                    {latestNumber.letter}
-                  </div>
-                  <div className="text-4xl font-bold text-black">{latestNumber.number}</div>
+        <div className="w-[600px] flex flex-col gap-3">
+          {gameState === 'Finished' &&  <div className="bg-white shadow-md rounded-lg p-2 w-full text-center text-gray-500">Game Over! ${winner ? `Winner: ${winner}` : '' }</div>}
+          {gameState === 'Waiting' ? (
+            <div className="bg-white shadow-md rounded-lg p-2 w-full text-center text-gray-500">Waiting for game to start...</div>
+          ) : (
+            <div className="bg-white shadow-md rounded-lg p-2 w-full text-center text-gray-500">First number coming up...</div>
+          )}
+
+          <div className='flex gap-3'>
+            {/* Latest called number display */}
+            <div className="bg-white shadow-md rounded-lg p-4 w-full max-w-md text-center">
+              {/* Start Game Button */}
+              {gameState === 'Waiting' && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-4 text-gray-500">Start Game</h2>
+                  <button
+                    onClick={handleStartGame}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-bold px-6 py-3 rounded transition"
+                  >
+                    Start Game
+                  </button>
                 </div>
-                {countdown !== null && (
-                  <div className="mt-1 text-sm">Next number in: {countdown}s</div>
-                )}
-              </>
-            ) : (
-              gameState === 'Waiting' ? (
-                <div className="py-2 text-gray-500">Waiting for game to start...</div>
-              ) : (
-                <div className="py-2 text-gray-500">First number coming up...</div>
-              )
-            )}
+              )}
+              {gameState === 'playing' && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-4 text-gray-500">🎱 Call a Number</h2>
+                  <button
+                    onClick={handleCallNumber}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-bold px-6 py-3 rounded transition"
+                  >
+                    Call
+                  </button>
+                </div>
+              )}
+              
+              {latestNumber && (
+                <div className='mt-8'>
+                  <p className="font-semibold text-gray-500 mb-2">LATEST NUMBER</p>
+
+                  <div className="flex items-center justify-center space-x-4">
+                    <div className="bg-indigo-600 text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold">
+                      {latestNumber.letter}
+                    </div>
+                    <div className="text-4xl font-extrabold text-gray-900">{latestNumber.number}</div>
+                  </div>
+                  {countdown !== null && (
+                    <div className="mt-1 text-sm">Next number in: {countdown}s</div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="w-full flex flex-col gap-3">
+              {/* Players list */}
+              <div className="bg-white rounded-lg shadow p-3">
+                <h2 className="text-sm font-medium text-gray-500 mb-2">Players {players.length} / {maxPlayers}</h2>
+                <div className="space-y-2">
+                  {players.map(player => (
+                    <div key={player.userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                      <div className="font-medium text-black">{formatAddress(player.username || "")}</div>
+                      <div className="text-sm">
+                        <span className="text-indigo-600 font-medium">{player.score}</span> pts
+                        {player.bingos > 0 && (
+                          <span className="ml-2 bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">
+                            {player.bingos} bingo
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
+
+          <button
+            onClick={handleComposeCast}
+            className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded shadow"
+          >
+            Share on Warpcast 🚀
+          </button>
 
           {/* Bingo card */}
           <div className="bg-white rounded-lg shadow p-4">
@@ -407,29 +434,6 @@ const BingoGameOffChain: React.FC = () => {
               {calledNumbers.length === 0 && (
                 <div className="col-span-5 sm:col-span-10 text-gray-400 text-sm py-1">No numbers called yet</div>
               )}
-            </div>
-          </div>
-        </div>
-        
-        {/* Right side - Players and chat */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-3">
-          {/* Players list */}
-          <div className="bg-white rounded-lg shadow p-3">
-            <h2 className="text-sm font-medium text-gray-500 mb-2">Players {players.length} / {maxPlayers}</h2>
-            <div className="space-y-2">
-              {players.map(player => (
-                <div key={player.userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                  <div className="font-medium text-black">{formatAddress(player.username || "")}</div>
-                  <div className="text-sm">
-                    <span className="text-indigo-600 font-medium">{player.score}</span> pts
-                    {player.bingos > 0 && (
-                      <span className="ml-2 bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">
-                        {player.bingos} bingo
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
