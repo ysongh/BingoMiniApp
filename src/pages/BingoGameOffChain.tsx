@@ -5,7 +5,7 @@ import { sdk } from '@farcaster/frame-sdk';
 
 import ErrorAlert from '../components/ErrorAlert.js';
 import BingoGameHeader from '../components/BingoGameHeader.js';
-import { formatAddress } from '../utils/format.js';
+import PlayerList from '../components/PlayerList.js';
 
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
@@ -280,9 +280,10 @@ const BingoGameOffChain: React.FC = () => {
         {errorMessage && <ErrorAlert message={errorMessage} />}
         <div className="flex items-center justify-center min-h-screen bg-indigo-50">
           <div>
+            <PlayerList maxPlayers={maxPlayers} players={players} />
             <button 
               onClick={handleJoinGame}
-              className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+              className="px-8 py-3 mt-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full text-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
             >
               Join Game
             </button>
@@ -362,27 +363,7 @@ const BingoGameOffChain: React.FC = () => {
               )}
             </div>
 
-            <div className="w-full flex flex-col gap-3">
-              {/* Players list */}
-              <div className="bg-white rounded-lg shadow p-3">
-                <h2 className="text-sm font-medium text-gray-500 mb-2">Players {players.length} / {maxPlayers}</h2>
-                <div className="space-y-2">
-                  {players.map(player => (
-                    <div key={player.userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <div className="font-medium text-black">{formatAddress(player.username || "")}</div>
-                      <div className="text-sm">
-                        <span className="text-indigo-600 font-medium">{player.score}</span> pts
-                        {player.bingos > 0 && (
-                          <span className="ml-2 bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">
-                            {player.bingos} bingo
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <PlayerList maxPlayers={maxPlayers} players={players} />
           </div>
 
           <button
