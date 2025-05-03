@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-function BingoGameHeader() {
+function BingoGameHeader({ name }: string) {
   const navigate = useNavigate();
 
   return (
@@ -16,7 +16,7 @@ function BingoGameHeader() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
-          <h1 className="text-lg font-bold">Room: Friendly Bingo</h1>
+          <h1 className="text-lg font-bold">Room: {name}</h1>
         </div>
       </div>
     </header>

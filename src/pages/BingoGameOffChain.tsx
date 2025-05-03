@@ -38,6 +38,7 @@ const BingoGameOffChain: React.FC = () => {
 
   // Game state
   const [gameState, setGameState] = useState<'Waiting' | 'playing' | 'Finished'>('Waiting');
+  const [name, setName] = useState<string>("");
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [latestNumber, setLatestNumber] = useState<LatestNumberType>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -75,6 +76,7 @@ const BingoGameOffChain: React.FC = () => {
       setCalledNumbers(data.calledNumbers);
       setLatestNumber(data.latestNumber || null);
       setPlayers(data.players);
+      setName(data.name);
       setMaxPlayers(data.maxPlayers);
       setWinner(data.winner || null);
       const player = data.players.find((p) => p.username === address);
@@ -305,7 +307,7 @@ const BingoGameOffChain: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-indigo-50">
-      <BingoGameHeader />
+      <BingoGameHeader name={name} />
       {errorMessage && <ErrorAlert message={errorMessage} />}
 
       {/* Main game area */}
