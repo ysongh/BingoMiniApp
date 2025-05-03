@@ -1,12 +1,17 @@
 import { formatAddress } from '../utils/format.js';
+import { Player } from '../types.js';
 
-function PlayerList({ maxPlayers, players }: any) {
+interface PlayerProps {
+  maxPlayers: number;
+  players: Player[];
+}
+
+function PlayerList({ maxPlayers, players }: PlayerProps) {
   return (
     <div className="w-full flex flex-col gap-3">
       <div className="bg-white rounded-lg shadow p-3">
         <h2 className="text-sm font-medium text-gray-500 mb-2">Players {players.length} / {maxPlayers}</h2>
         <div className="space-y-2">
-          {/* @ts-ignore */}
           {players.map(player => (
             <div key={player.userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
               <div className="font-medium text-black">{formatAddress(player.username || "")}</div>

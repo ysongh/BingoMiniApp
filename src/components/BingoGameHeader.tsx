@@ -1,6 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 
-function BingoGameHeader({ name }: string) {
+interface nameProps {
+  name: string;
+}
+
+function BingoGameHeader({ name }: nameProps) {
   const navigate = useNavigate();
 
   return (
