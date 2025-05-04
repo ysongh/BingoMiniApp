@@ -312,7 +312,7 @@ const BingoGameOffChain: React.FC = () => {
 
       {/* Main game area */}
       <main className="flex justify-center align-middle p-3 gap-3">
-        {/* Left side - Bingo card and game controls */}
+        {/* Status Banner */}
         <div className="w-[600px] flex flex-col gap-3">
           {gameState === 'Finished' &&  <div className="bg-white shadow-md rounded-lg p-2 w-full text-center text-gray-500">Game Over! ${winner ? `Winner: ${winner}` : '' }</div>}
           {gameState === 'Waiting' ? (
@@ -322,6 +322,7 @@ const BingoGameOffChain: React.FC = () => {
           )}
 
           <div className='flex gap-3'>
+            {/* Caller Panel */}
             {/* Latest called number display */}
             <div className="bg-white shadow-md rounded-lg p-4 w-full max-w-md text-center">
               {/* Start Game Button */}
