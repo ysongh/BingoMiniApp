@@ -53,11 +53,11 @@ const BingoGameOffChain: React.FC = () => {
   useEffect(() => {
     fetchGameState();
 
-    // const interval = setInterval(() => {
-    //   fetchGameState();
-    // }, 5000);
+    const interval = setInterval(() => {
+      fetchGameState();
+    }, 5000);
 
-    // return () => clearInterval(interval);
+    return () => clearInterval(interval);
 
   }, [roomId])
 

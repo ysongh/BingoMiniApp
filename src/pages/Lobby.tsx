@@ -23,7 +23,7 @@ const Lobby = () => {
 
   // Fetch available rooms on mount
   useEffect(() => {
-    fetchRooms();
+    fetchAvailableRooms();
   }, []);
 
   // const { data: hash, error, writeContract } = useWriteContract();
@@ -41,11 +41,11 @@ const Lobby = () => {
   const [gameRooms, setGameRooms] =useState<GameRoom[]>([]);
   const [roomCode, setRoomCode] = useState('');
   const [gameType, setGameType] = useState('');
-  const [filterOption, setFilterOption] = useState('all');
+  const [filterOption, setFilterOption] = useState('available');
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
- const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // const handleCreateRoomOnChain = async (e: any) => {
   //   e.preventDefault();
