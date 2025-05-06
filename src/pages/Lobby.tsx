@@ -42,7 +42,7 @@ const Lobby = () => {
   const [roomCode, setRoomCode] = useState('');
   const [gameType, setGameType] = useState('');
   const [filterOption, setFilterOption] = useState('available');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
   const [activeSection, setActiveSection] = useState('actions'); // 'actions' or 'rooms' for mobile toggle
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -385,6 +385,8 @@ const Lobby = () => {
                 </div>
               </div>
             ))}
+
+            {!gameRooms.length && <p className="text-red-400 text-2xl mt-3">No Bingo game yet. Try to create one.</p>}
           </div>}
 
           {!isLoading && <div className="hidden md:block overflow-x-auto">
@@ -468,6 +470,8 @@ const Lobby = () => {
                     </td>
                   </tr>
                 ))}
+
+                {!gameRooms.length && <p className="text-red-400 text-2xl mt-3">No Bingo game yet. Try to create one.</p>}
               </tbody>
             </table>
           </div>}
