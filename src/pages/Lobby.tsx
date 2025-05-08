@@ -302,6 +302,14 @@ const Lobby = () => {
               )}
             </form>
           )}
+          <div className="mt-4">
+            <h3 className="font-medium text-indigo-700">Getting Started</h3>
+            <ol className="list-decimal pl-5 mt-1 text-sm space-y-1">
+              <li>Connect to your wallet</li>
+              <li>Either join an existing room or create your own</li>
+              <li>Wait for the game to start with other players</li>
+            </ol>
+          </div>
         </div>
 
         <div 
