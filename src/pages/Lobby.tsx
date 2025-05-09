@@ -176,29 +176,7 @@ const Lobby = () => {
   return (
     <div className="flex flex-col min-h-screen bg-indigo-50 text-gray-800">
       {errorMessage && <ErrorAlert message={errorMessage} />}
-      <div className="flex bg-indigo-100 md:hidden">
-        <button
-          onClick={() => setActiveSection('actions')}
-          className={`py-2 px-4 text-center w-1/2 ${
-            activeSection === 'actions'
-              ? 'bg-white font-medium text-indigo-600'
-              : 'text-gray-600'
-          }`}
-        >
-          Play Game
-        </button>
-        <button
-          onClick={() => setActiveSection('rooms')}
-          className={`py-2 px-4 text-center w-1/2 ${
-            activeSection === 'rooms'
-              ? 'bg-white font-medium text-indigo-600'
-              : 'text-gray-600'
-          }`}
-        >
-          Browse Rooms
-        </button>
-      </div>
-
+      
       <main className="flex flex-col md:flex-row flex-grow p-3">
         <div 
           className={`w-full md:w-1/3 bg-white rounded-lg shadow p-4 mb-3 md:mb-0 md:mr-3 ${
@@ -491,6 +469,29 @@ const Lobby = () => {
           </div>}
         </div>
       </main>
+
+      <div className="flex bg-indigo-100 md:hidden sticky bottom-0 z-10">
+        <button
+          onClick={() => setActiveSection('actions')}
+          className={`py-2 px-4 text-center w-1/2 ${
+            activeSection === 'actions'
+              ? 'bg-white font-medium text-indigo-600'
+              : 'text-gray-600'
+          }`}
+        >
+          Play Game
+        </button>
+        <button
+          onClick={() => setActiveSection('rooms')}
+          className={`py-2 px-4 text-center w-1/2 ${
+            activeSection === 'rooms'
+              ? 'bg-white font-medium text-indigo-600'
+              : 'text-gray-600'
+          }`}
+        >
+          Browse Rooms
+        </button>
+      </div>
     </div>
   );
 };
