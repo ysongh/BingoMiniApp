@@ -45,8 +45,8 @@ router.post('/join', async (req, res) => {
     if (!gameRoom) {
       return res.status(404).json({ error: 'Room not found' });
     }
-    if (gameRoom.status !== 'Waiting') {
-      return res.status(400).json({ error: 'Game already in progress or finished' });
+    if (gameRoom.status === 'Finished') {
+      return res.status(400).json({ error: 'Game already or finished' });
     }
     if (gameRoom.players.length >= gameRoom.maxPlayers) {
       return res.status(400).json({ error: 'Room is full' });
