@@ -251,6 +251,17 @@ router.post('/room/:roomId/check-bingo', async (req, res) => {
       gameRoom.winner = username;
       player.bingos += 1;
       player.score += 100; // Optional: Award points for Bingo
+
+      // Update PlayerStats
+      await PlayerStats.findOneAndUpdate(
+        { username },
+        {
+          $inc: { totalScore: 100, totalBingos: 1 },
+          $setOnInsert: { username, gamesPlayed: 0 },
+        },
+        { upsert: true }
+      );
+
       await gameRoom.save();
 
       return res.json({
