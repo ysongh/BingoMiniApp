@@ -15,6 +15,7 @@ import { SERVER_URL } from '../utils/config.js';
 import { GameRoom } from '../types';
 import { LoadingSpinner } from '../components/LoadingSpinner.js';
 import ErrorAlert from '../components/ErrorAlert.js';
+import Leaderboard from './Leaderboard.js';
 
 const Lobby = () => {
   const { address } = useAccount();
@@ -468,6 +469,14 @@ const Lobby = () => {
             </table>
           </div>}
         </div>
+
+        <div 
+          className={`w-full md:w-1/3 bg-white rounded-lg shadow p-4 mb-3 md:mb-0 md:mr-3 ${
+            activeSection === 'leaderboard' || window.innerWidth >= 768 ? 'block' : 'hidden'
+          }`}
+        >
+          <Leaderboard />
+        </div>
       </main>
 
       <div className="flex bg-indigo-100 md:hidden sticky bottom-0 z-10">
@@ -490,6 +499,16 @@ const Lobby = () => {
           }`}
         >
           Browse Rooms
+        </button>
+        <button
+          onClick={() => setActiveSection('leaderboard')}
+          className={`py-2 px-4 text-center w-1/2 ${
+            activeSection === 'leaderboard'
+              ? 'bg-white font-medium text-indigo-600'
+              : 'text-gray-600'
+          }`}
+        >
+          Leaderboard
         </button>
       </div>
     </div>
