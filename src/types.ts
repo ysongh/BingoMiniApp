@@ -67,3 +67,11 @@ export interface CheckBingoResponse {
   winner?: string;
   status?: 'Waiting' | 'In Progress' | 'Finished';
 }
+
+export interface PlayerStats {
+  _id?: string;
+  username: string;
+  totalScore: number;
+  totalBingos: number;
+  gamesPlayed: number;
+}
