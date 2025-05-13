@@ -1,5 +1,6 @@
 import express from 'express';
 import GameRoom from '../models/GameRoom.js';
+import PlayerStats from '../models/PlayerStats.js';
 
 const router = express.Router();
 
@@ -27,6 +28,14 @@ router.post('/create', async (req, res) => {
 
   try {
     await gameRoom.save();
+
+    // Initialize player stats if not exists
+    await PlayerStats.findOneAndUpdate(
+      { username },
+      { $setOnInsert: { username, totalScore: 0, totalBingos: 0, gamesPlayed: 1 } },
+      { upsert: true }
+    );
+    
     res.status(201).json({ roomId, message: 'Room created successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to create room' });
@@ -63,6 +72,14 @@ router.post('/join', async (req, res) => {
     const bingoCard = generateBingoCard();
     gameRoom.players.push({ userId: username, username, bingoCard });
     await gameRoom.save();
+
+    // Increment gamesPlayed for the player
+    await PlayerStats.findOneAndUpdate(
+      { username },
+      { $setOnInsert: { username, totalScore: 0, totalBingos: 0, gamesPlayed: 0 }, $inc: { gamesPlayed: 1 } },
+      { upsert: true }
+    );
+
     res.json({ message: 'Joined room successfully', roomId });
   } catch (err) {
     res.status(500).json({ error: 'Failed to join room' });
@@ -250,6 +267,19 @@ router.post('/room/:roomId/check-bingo', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to check Bingo' });
+  }
+});
+
+// Get leaderboard
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const leaderboard = await PlayerStats.find()
+      .select('username totalScore totalBingos gamesPlayed')
+      .sort({ totalScore: -1 })
+      .limit(10); // Top 10 players
+    res.json(leaderboard);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch leaderboard' });
   }
 });
 
