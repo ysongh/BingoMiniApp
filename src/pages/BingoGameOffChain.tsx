@@ -9,6 +9,7 @@ import PlayerList from '../components/PlayerList.js';
 
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
+import { formatAddress } from '../utils/format.js';
 import {
   GameRoom,
   ApiError,
@@ -314,8 +315,12 @@ const BingoGameOffChain: React.FC = () => {
       <main className="flex justify-center align-middle p-3 gap-3">
         {/* Status Banner */}
         <div className="w-[600px] flex flex-col gap-3">
-          {gameState === 'Finished' &&  <div className="bg-white shadow-md rounded-lg p-2 w-full text-center text-gray-500">Game Over! ${winner ? `Winner: ${winner}` : '' }</div>}
-          {gameState === 'Waiting' ? (
+          {gameState === 'Finished' ? (
+            <div className="bg-white shadow-md rounded-lg p-2 w-full text-center text-gray-500">
+              <h3 className="font-bold text-2xl">Game Over! </h3>
+              <p>{winner ? `Winner: ${formatAddress(winner)}` : '' }</p>
+            </div>
+          ): gameState === 'Waiting' ? (
             <div className="bg-white shadow-md rounded-lg p-2 w-full text-center text-gray-500">Waiting for game to start...</div>
           ) : (
             <div className="bg-white shadow-md rounded-lg p-2 w-full text-center text-gray-500">First number coming up...</div>
