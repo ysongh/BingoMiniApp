@@ -51,7 +51,7 @@ const Leaderboard: React.FC = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div>
       <h2 className="text-xl font-medium mb-4">Leaderboard</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
