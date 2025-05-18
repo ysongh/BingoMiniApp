@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-// @ts-ignore
-import { SERVER_URL } from '../utils/config.js';
-// @ts-ignore
-import { formatAddress } from '../utils/format.js';
+import { SERVER_URL } from '../utils/config';
+import { formatAddress } from '../utils/format';
 import { PlayerStats, ApiError } from '../types';
 
 const Leaderboard: React.FC = () => {

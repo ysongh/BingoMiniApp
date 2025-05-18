@@ -9,7 +9,7 @@ import {
 } from 'wagmi';
 
 // @ts-ignore
-import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata';
+import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata.js';
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
 import { GameRoom } from '../types';
