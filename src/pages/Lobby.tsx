@@ -414,11 +414,7 @@ const Lobby = () => {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <button
-                        onClick={() => {
-                          setRoomCode(room);
-                          setGameType('onchain');
-                          setActiveTab('join');
-                        }}
+                        onClick={() => navigate('/game/' + room)}
                         disabled={!address}
                         className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                       >
@@ -451,10 +447,7 @@ const Lobby = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={() => {
-                          setRoomCode(room.roomId);
-                          setGameType('offchain');
-                        }}
+                        onClick={() => navigate('/game/offchain/' + room.roomId)}
                         disabled={!address}
                         className="text-sm px-3 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 disabled:bg-gray-100 disabled:text-gray-400"
                       >
