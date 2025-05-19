@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  type BaseError,
-  useAccount,
-  useReadContract,
-  useWriteContract,
-  useWaitForTransactionReceipt
-} from 'wagmi';
+// import {
+//   type BaseError,
+//   useAccount,
+//   useReadContract,
+//   useWriteContract,
+//   useWaitForTransactionReceipt
+// } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 // @ts-ignore
 import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata.js';
@@ -26,21 +27,21 @@ const Lobby = () => {
     fetchAvailableRooms();
   }, []);
 
-  const { data: hash, error, writeContract } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = 
-  useWaitForTransactionReceipt({
-    hash,
-  });
+  // const { data: hash, error, writeContract } = useWriteContract();
+  // const { isLoading: isConfirming, isSuccess: isConfirmed } = 
+  // useWaitForTransactionReceipt({
+  //   hash,
+  // });
 
-  const { data: rooms = [] } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: BingoABI,
-    functionName: 'getAllRooms',
-  });
+  // const { data: rooms = [] } = useReadContract({
+  //   address: CONTRACT_ADDRESS,
+  //   abi: BingoABI,
+  //   functionName: 'getAllRooms',
+  // });
 
   const [gameRooms, setGameRooms] =useState<GameRoom[]>([]);
   const [roomCode, setRoomCode] = useState('');
-  const [gameType, setGameType] = useState('');
+  const [gameType] = useState('');
   const [filterOption, setFilterOption] = useState('available');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('join'); // 'join' or 'create'
@@ -61,12 +62,12 @@ const Lobby = () => {
       console.log(roomName, roomSize);
 
       if (buttonType === "On-Chain") {
-        writeContract({
-          address: CONTRACT_ADDRESS,
-          abi: BingoABI,
-          functionName: 'createRoom',
-          args: [roomName, roomName, roomSize, 0],
-        });
+        // writeContract({
+        //   address: CONTRACT_ADDRESS,
+        //   abi: BingoABI,
+        //   functionName: 'createRoom',
+        //   args: [roomName, roomName, roomSize, 0],
+        // });
       } else {
         const response = await fetch(SERVER_URL + 'api/game/create', {
           method: 'POST',
@@ -258,27 +259,27 @@ const Lobby = () => {
                   <option value="20">20 Players</option>
                 </select>
               </div>
-              <button
+              {/* <button
                 type="submit"
                 value="On-Chain"
                 disabled={!address}
                 className="w-full py-2 px-4 mb-2 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed"
               >
                 Create Room On-Chain
-              </button>
+              </button> */}
               <button
                 type="submit"
                 value="Off-Chain"
                 disabled={!address}
                 className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed"
               >
-                Create Room Off-Chain
+                Create Room
               </button>
-              {isConfirming && <div>Waiting for confirmation...</div>}
+              {/* {isConfirming && <div>Waiting for confirmation...</div>}
               {isConfirmed && <div>Transaction confirmed.</div>}
               {error && (
                 <div>Error: {(error as BaseError).shortMessage || error.message}</div>
-              )}
+              )} */}
             </form>
           )}
           <div className="mt-4">
@@ -316,7 +317,7 @@ const Lobby = () => {
           {isLoading && <LoadingSpinner />}
           
           {!isLoading && <div className="md:hidden space-y-3">
-            {rooms.map((room: string, index: number) => (
+            {/* {rooms.map((room: string, index: number) => (
               <div key={index} className="border rounded-lg p-3">
                 <div className="flex justify-between items-start mb-2">
                   <div>
@@ -345,7 +346,7 @@ const Lobby = () => {
                   </button>
                 </div>
               </div>
-            ))}
+            ))} */}
             {gameRooms.map((room) => (
               <div key={room.roomId} className="border rounded-lg p-3">
                 <div className="flex justify-between items-start mb-2">
@@ -393,7 +394,7 @@ const Lobby = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {rooms.map((room: string, index: number) => (
+                {/* {rooms.map((room: string, index: number) => (
                   <tr key={index}>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="font-medium">{room}</div>
@@ -422,7 +423,7 @@ const Lobby = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                ))} */}
                 {gameRooms.map((room) => (
                   <tr key={room.roomId}>
                     <td className="px-4 py-4 whitespace-nowrap">
