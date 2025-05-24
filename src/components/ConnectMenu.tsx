@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react';
 import {
   useAccount,
   useConnect,
   useChains,
   useChainId,
 } from "wagmi";
+import sdk from "@farcaster/frame-sdk";
 
 import { formatAddress } from "../utils/format";
 
@@ -15,6 +17,16 @@ export function ConnectMenu() {
 
   const currentChain = chains.find(chain => chain.id === chainId);
 
+  const [username, setUsername] = useState<string>("");
+
+  useEffect(() => {
+    const loadSDK = async () => {
+      const context = await sdk.context;
+      setUsername(context?.user?.username || "");
+    }
+    loadSDK();
+  }, [])
+
   if (isConnected) {
     return (
       <div className="bg-indigo-600 text-white flex justify-between py-2 px-4">
@@ -22,7 +34,7 @@ export function ConnectMenu() {
           <p>Connected to: {currentChain ? currentChain.name : 'Not connected'}</p>
         </div>
         <div>
-          <div>{formatAddress(address || "")}</div>
+          <div>{username ? username : formatAddress(address || "")}</div>
         </div>
         {/* <SignButton /> */}
       </div>
