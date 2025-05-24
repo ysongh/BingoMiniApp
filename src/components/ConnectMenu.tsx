@@ -18,11 +18,13 @@ export function ConnectMenu() {
   const currentChain = chains.find(chain => chain.id === chainId);
 
   const [username, setUsername] = useState<string>("");
+  const [pfpUrl, setpfpUrl] = useState<string>("");
 
   useEffect(() => {
     const loadSDK = async () => {
       const context = await sdk.context;
       setUsername(context?.user?.username || "");
+      setpfpUrl(context?.user?.pfpUrl || "");
     }
     loadSDK();
   }, [])
@@ -33,7 +35,12 @@ export function ConnectMenu() {
         <div>
           <p>Connected to: {currentChain ? currentChain.name : 'Not connected'}</p>
         </div>
-        <div>
+        <div className="flex">
+          <img
+            src={pfpUrl ? pfpUrl : `https://api.dicebear.com/7.x/identicon/svg?seed=${address}`}
+            alt="wallet avatar"
+            className="w-6 h-6 rounded-full mr-1"
+          />
           <div>{username ? username : formatAddress(address || "")}</div>
         </div>
         {/* <SignButton /> */}
