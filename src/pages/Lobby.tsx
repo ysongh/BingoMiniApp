@@ -13,14 +13,19 @@ import { useAccount } from 'wagmi';
 import { CONTRACT_ADDRESS, BingoABI } from '../utils/contractdata.js';
 // @ts-ignore
 import { SERVER_URL } from '../utils/config.js';
+
 import { GameRoom } from '../types';
 import { LoadingSpinner } from '../components/LoadingSpinner.js';
 import ErrorAlert from '../components/ErrorAlert.js';
 import Leaderboard from './Leaderboard.js';
+import { useXmtpSigner } from '../lib/xmtpSigner.js';
 
 const Lobby = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
+  const signer = useXmtpSigner();
+
+  console.log(signer);
 
   // Fetch available rooms on mount
   useEffect(() => {
