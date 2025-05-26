@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Client } from "@xmtp/browser-sdk";
 // import {
 //   type BaseError,
 //   useAccount,
@@ -18,14 +19,19 @@ import { GameRoom } from '../types';
 import { LoadingSpinner } from '../components/LoadingSpinner.js';
 import ErrorAlert from '../components/ErrorAlert.js';
 import Leaderboard from './Leaderboard.js';
-import { useXmtpSigner } from '../lib/xmtpSigner.js';
+import useXMTP from '../hooks/use-xmtp';
 
 const Lobby = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
-  const signer = useXmtpSigner();
 
-  console.log(signer);
+  const { client } = useXMTP({
+    options: {
+      env: "dev",
+    },
+  });
+
+  console.log(client);
 
   // Fetch available rooms on mount
   useEffect(() => {
