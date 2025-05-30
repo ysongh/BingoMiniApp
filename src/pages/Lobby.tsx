@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Client } from "@xmtp/browser-sdk";
 // import {
 //   type BaseError,
 //   useAccount,
@@ -19,47 +18,10 @@ import { GameRoom } from '../types';
 import { LoadingSpinner } from '../components/LoadingSpinner.js';
 import ErrorAlert from '../components/ErrorAlert.js';
 import Leaderboard from './Leaderboard.js';
-import useXMTP from '../hooks/use-xmtp';
-import { useEthersSigner } from '../utils/ethers.js';
 
 const Lobby = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
-
-  // const { client } = useXMTP({
-  //   options: {
-  //     env: "dev",
-  //   },
-  // });
-
-  // console.log(client);
-
-const signer = useEthersSigner();
-const [xmtpClient, setXmtpClient] = useState(null);
-
-useEffect(() => {
-  const initXmtp = async () => {
-    if (signer) {
-      try {
-        // You can choose 'dev' for development, 'production' for live apps, or 'local' for local testing.
-        // 'dev' messages/identities may be deleted periodically.[1]
-        // 'production' stores messages indefinitely.[1]
-        const client = await Client.create(signer, {
-          env: 'dev', // Or 'production' when ready for deployment
-          // IMPORTANT: dbEncryptionKey is crucial for persistent local message access.
-          // If lost or incorrect, previously stored messages will be inaccessible.[1]
-          // Consider securely managing this key, e.g., deriving from user input or a secure storage.
-        });
-        setXmtpClient(client);
-        console.log('XMTP Client created:', client.address);
-      } catch (error) {
-        console.error('Error creating XMTP client:', error);
-      }
-    }
-  };
-
-  initXmtp();
-}, [signer]);
 
   // Fetch available rooms on mount
   useEffect(() => {
